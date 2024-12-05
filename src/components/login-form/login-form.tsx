@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useState } from 'react';
 import { ROLE } from '@/constants';
 import { useUserStore } from '@/stores';
@@ -7,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
 
 const FAKE_USERS = [
     {
@@ -39,7 +39,6 @@ export const LoginForm = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Find user in fake users
         const foundUser = FAKE_USERS.find(
             user => user.email === email && user.password === password
         );
@@ -61,6 +60,11 @@ export const LoginForm = () => {
                 description: 'Invalid email or password'
             });
         }
+    };
+
+    const copyToClipboard = (text: string, type: 'email' | 'password') => {
+        navigator.clipboard.writeText(text);
+        toast.success(`${type} copied to clipboard!`);
     };
 
     return (
@@ -102,9 +106,23 @@ export const LoginForm = () => {
                     </div>
                     <div className="text-center text-sm text-gray-600">
                         <p>Test Credentials:</p>
-                        <p>Admin: admin@example.com / admin123</p>
-                        <p>Teacher: teacher@example.com / teacher123</p>
-                        <p>Student: student@example.com / student123</p>
+                        {FAKE_USERS.map((user) => (
+                            <div key={user.email} className="space-x-2">
+                                <span 
+                                    className="cursor-pointer hover:text-blue-500"
+                                    onClick={() => copyToClipboard(user.email, 'email')}
+                                >
+                                    {user.email}
+                                </span>
+                                <span>/</span>
+                                <span 
+                                    className="cursor-pointer hover:text-blue-500"
+                                    onClick={() => copyToClipboard(user.password, 'password')}
+                                >
+                                    {user.password}
+                                </span>
+                            </div>
+                        ))}
                     </div>
                 </CardContent>
                 <CardFooter>

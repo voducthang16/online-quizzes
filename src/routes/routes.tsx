@@ -1,9 +1,8 @@
 import { ReactNode } from 'react';
-import { ROLE } from '@/constants';
+import { ROLE, ROUTES } from '@/constants';
 import { AppSidebar } from '@/layouts';
-import { UserPage } from '@/pages/user';
 import { Landmark, LayoutDashboard, Users } from 'lucide-react';
-import { DashboardPage, LoginPage, NotFoundPage, UnauthorizedPage, BankPage } from '@/pages';
+import { DashboardPage, UsersPage, LoginPage, NotFoundPage, UnauthorizedPage, BankPage } from '@/pages';
 
 export interface RouteConfig {
     path: string;
@@ -18,7 +17,7 @@ export interface RouteConfig {
 
 export const routes: RouteConfig[] = [
     {
-        path: '',
+        path: ROUTES.DASHBOARD,
         element: <DashboardPage />,
         title: 'Dashboard',
         icon: LayoutDashboard,
@@ -27,16 +26,16 @@ export const routes: RouteConfig[] = [
         layout: <AppSidebar />,
     },
     {
-        path: 'users',
-        element: <UserPage />,
+        path: ROUTES.USERS,
+        element: <UsersPage />,
         title: 'Users',
         icon: Users,
-        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
+        allowedRoles: [ROLE.ADMIN],
         isSidebar: true,
         layout: <AppSidebar />,
     },
     {
-        path: 'banks',
+        path: ROUTES.BANKS,
         element: <BankPage />,
         title: 'Banks',
         icon: Landmark,
@@ -45,17 +44,17 @@ export const routes: RouteConfig[] = [
         layout: <AppSidebar />,
     },
     {
-        path: 'login',
+        path: ROUTES.LOGIN,
         element: <LoginPage />,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
     },
     {
-        path: 'unauthorized',
+        path: ROUTES.UNAUTHORIZED,
         element: <UnauthorizedPage />,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
     },
     {
-        path: '*',
+        path: ROUTES.NOT_FOUND,
         element: <NotFoundPage />,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
     }

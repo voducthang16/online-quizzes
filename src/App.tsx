@@ -37,7 +37,7 @@ function App() {
     }
 
     return (
-        <div className="flex container mx-auto">
+        <div className="flex container mx-auto overflow-hidden">
             <Toaster richColors position="top-right" />
             <Routes>
                 {routes.map((route) => {

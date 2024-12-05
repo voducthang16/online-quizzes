@@ -85,7 +85,9 @@ export const AppSidebar = () => {
                     </SidebarContent>
                 </Sidebar>
             </SidebarProvider>
-            <div className="flex-1"><Outlet /></div>
+            <div className="flex-1 overflow-x-auto px-4 sm:px-0">
+                <Outlet />
+            </div>
         </>
     );
 };

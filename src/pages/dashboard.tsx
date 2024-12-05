@@ -1,7 +1,7 @@
 import { ROLE } from "@/constants";
-import { Loader2 } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { useUserStore } from "@/stores";
+import { LoadingSpinner } from "@/components";
 
 const DashboardAdmin = lazy(() => import('./admin/dashboard-admin'));
 const DashboardTeacher = lazy(() => import('./teacher/dashboard-teacher'));
@@ -9,12 +9,6 @@ const DashboardStudent = lazy(() => import('./student/dashboard-student'));
 
 export const DashboardPage = () => {
     const { userInfo } = useUserStore();
-
-    const LoadingSpinner = () => (
-        <div className="flex justify-center items-center h-full">
-            <Loader2 className="animate-spin w-12 h-12 text-blue-500" />
-        </div>
-    );
 
     const DashboardComponent = () => {
         switch (userInfo?.role) {
