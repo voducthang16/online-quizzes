@@ -7,8 +7,7 @@
         "dev": "vite",
         "build": "tsc -b && vite build",
         "lint": "eslint .",
-        "preview": "vite preview",
-        "preinstall": "npx force-node-version 18.18.0"
+        "preview": "vite preview"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.2",
