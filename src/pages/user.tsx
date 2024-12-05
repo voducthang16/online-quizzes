@@ -5,7 +5,7 @@ import { LoadingSpinner } from '@/components';
 
 const UserAdmin = lazy(() => import('./admin/user/user-admin'));
 
-export const UsersPage = () => {
+export const UserPage = () => {
     const { userInfo } = useUserStore();
 
     const UserComponent = () => {

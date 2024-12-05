@@ -1,8 +1,8 @@
 export const ROUTES = {
     DASHBOARD: '',
-    USERS: 'users',
-    CLASSES: 'classes',
-    BANKS: 'banks',
+    USER: 'user',
+    CLASS: 'class',
+    BANK: 'bank',
     LOGIN: 'login',
     UNAUTHORIZED: 'unauthorized',
     NOT_FOUND: '*',

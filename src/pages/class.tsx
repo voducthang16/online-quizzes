@@ -3,15 +3,15 @@ import { useUserStore } from "@/stores";
 import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components";
 
-const ClassesAdmin = lazy(() => import('./admin/class/class-admin'));
+const ClassAdmin = lazy(() => import('./admin/class/class-admin'));
 
-export const ClassesPage = () => {
+export const ClassPage = () => {
     const { userInfo } = useUserStore();
 
-    const ClassesComponent = () => {
+    const ClassComponent = () => {
         switch (userInfo?.role) {
             case ROLE.ADMIN:
-                return <ClassesAdmin />;
+                return <ClassAdmin />;
             default:
                 return (
                     <div className="text-center text-red-500">
@@ -23,7 +23,7 @@ export const ClassesPage = () => {
 
     return (
         <Suspense fallback={<LoadingSpinner />}>
-            <ClassesComponent />
+            <ClassComponent />
         </Suspense>
     )
 };

@@ -3,5 +3,5 @@ export * from "./not-found";
 export * from "./unauthorized";
 export * from "./dashboard";
 export * from "./bank";
-export * from "./users";
-export * from "./classes";
+export * from "./user";
+export * from "./class";
