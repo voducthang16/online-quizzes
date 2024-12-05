@@ -44,7 +44,7 @@ export const AppSidebar = () => {
     return (
         <>
             <SidebarProvider>
-                <Sidebar variant="sidebar">
+                <Sidebar collapsible="icon" variant="sidebar">
                     <SidebarContent>
                         <SidebarGroup>
                             <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -85,7 +85,7 @@ export const AppSidebar = () => {
                     </SidebarContent>
                 </Sidebar>
             </SidebarProvider>
-            <div className="flex-1 overflow-x-auto px-4 sm:px-0">
+            <div className="bg-gray-50 flex-1 overflow-x-auto px-4 sm:px-0">
                 <Outlet />
             </div>
         </>

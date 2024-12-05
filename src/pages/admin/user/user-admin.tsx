@@ -81,7 +81,7 @@ const UserAdmin = () => {
     }
 
     return (
-        <div className="container mx-auto pl-0 sm:pl-6 lg:pl-8 py-10">
+        <div className="container mx-auto px-0 sm:px-6 lg:px-8 py-10">
             <div className="flex justify-between">
                 <h1 className="text-2xl font-bold mb-5">User Management</h1>
                 <UserForm onSubmit={handleSubmit}/>

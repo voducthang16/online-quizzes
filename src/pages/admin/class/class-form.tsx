@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { ROLE } from "@/constants";
-import { UserModel } from "@/models";
+import { ClassModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -8,94 +7,89 @@ import { Button } from "@/components/ui/button";
 import { FC, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-const userFormSchema = z.object({
-    email: z.string().email({ message: "Invalid email address." }),
-    role: z.nativeEnum(ROLE),
-    fullName: z.string().min(2, "Full name must be at least 2 characters long."),
+const classFormSchema = z.object({
+    name: z.string().min(2, "Class name must be at least 2 characters long."),
+    subjectId: z.string().min(1, "Subject is required"),
+    teacherId: z.string().min(1, "Teacher is required"),
 });
 
-export type UserFormValues = z.infer<typeof userFormSchema>;
+export type ClassFormValues = z.infer<typeof classFormSchema>;
 
-interface UserFormProps {
-    user?: UserModel;
-    onSubmit: (data: UserFormValues) => void;
+interface ClassFormProps {
+    class?: ClassModel;
+    onSubmit: (data: ClassFormValues) => void;
 }
 
-export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
+export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const form = useForm<UserFormValues>({
-        resolver: zodResolver(userFormSchema),
-        defaultValues: user ? {
-            email: user.email,
-            role: user.role,
-            fullName: user.fullName || '',
+    const form = useForm<ClassFormValues>({
+        resolver: zodResolver(classFormSchema),
+        defaultValues: classData ? {
+            name: classData.name,
+            subjectId: classData.subjectId,
+            teacherId: classData.teacherId,
         } : {
-            email: '',
-            role: ROLE.STUDENT,
-            fullName: '',
+            name: '',
+            subjectId: '',
+            teacherId: '',
         }
     });
 
     useEffect(() => {
         if (!isDialogOpen) {
-            form.reset(user ? {
-                email: user.email,
-                role: user.role,
-                fullName: user.fullName || '',
+            form.reset(classData ? {
+                name: classData.name,
+                subjectId: classData.subjectId,
+                teacherId: classData.teacherId,
             } : {
-                email: '',
-                role: ROLE.STUDENT,
-                fullName: '',
+                name: '',
+                subjectId: '',
+                teacherId: '',
             });
         }
-    }, [isDialogOpen, form, user]);
+    }, [isDialogOpen, form, classData]);
 
-    const handleSubmit = (data: UserFormValues) => {
+    const handleSubmit = (data: ClassFormValues) => {
         onSubmit(data);
-        onClose();
-    };
-
-    const onClose = () => {
         setIsDialogOpen(false);
-    }
+    };
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                {user ? (
+                {classData ? (
                     <Button
                         size="sm"
                         variant="secondary"
                         className="bg-gray-200 flex items-center w-8 h-8"
                     >
-                        <Pencil />
+                        <Pencil className="h-4 w-4" />
                     </Button>
                 ) : (
                     <Button>
-                        <Plus className="h-4 w-4" /> Add User
+                        <Plus className="h-4 w-4 mr-2" /> Add Class
                     </Button>
                 )}
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {user ? 'Edit User' : 'Create New User'}
+                        {classData ? 'Edit Class' : 'Create New Class'}
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="email"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel>Class Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter email" {...field} />
+                                        <Input placeholder="Enter class name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -103,39 +97,25 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="role"
+                            name="subjectId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Role</FormLabel>
-                                    <Select 
-                                        onValueChange={field.onChange} 
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a role" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {Object.values(ROLE).map((role) => (
-                                                <SelectItem key={role} value={role}>
-                                                    {role}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <FormLabel>Subject ID</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter subject ID" {...field} />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
                         <FormField
                             control={form.control}
-                            name="fullName"
+                            name="teacherId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Full Name</FormLabel>
+                                    <FormLabel>Teacher ID</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter full name" {...field} />
+                                        <Input placeholder="Enter teacher ID" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -145,12 +125,12 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                             <Button 
                                 type="button" 
                                 variant="outline" 
-                                onClick={() => onClose()}
+                                onClick={() => setIsDialogOpen(false)}
                             >
                                 Cancel
                             </Button>
                             <Button type="submit">
-                                {user ? 'Update User' : 'Create User'}
+                                {classData ? 'Update Class' : 'Create Class'}
                             </Button>
                         </div>
                     </form>

@@ -1,8 +1,16 @@
 import { ReactNode } from 'react';
-import { ROLE, ROUTES } from '@/constants';
 import { AppSidebar } from '@/layouts';
-import { Landmark, LayoutDashboard, Users } from 'lucide-react';
-import { DashboardPage, UsersPage, LoginPage, NotFoundPage, UnauthorizedPage, BankPage } from '@/pages';
+import { ROLE, ROUTES } from '@/constants';
+import { Landmark, LayoutDashboard, School, Users } from 'lucide-react';
+import {
+    DashboardPage,
+    UsersPage,
+    ClassesPage,
+    LoginPage,
+    NotFoundPage,
+    UnauthorizedPage,
+    BankPage,
+} from '@/pages';
 
 export interface RouteConfig {
     path: string;
@@ -31,6 +39,15 @@ export const routes: RouteConfig[] = [
         title: 'Users',
         icon: Users,
         allowedRoles: [ROLE.ADMIN],
+        isSidebar: true,
+        layout: <AppSidebar />,
+    },
+    {
+        path: ROUTES.CLASSES,
+        element: <ClassesPage />,
+        title: 'Classes',
+        icon: School,
+        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
         isSidebar: true,
         layout: <AppSidebar />,
     },
