@@ -1,13 +1,9 @@
 import { Toaster } from "sonner";
-import { ROLE } from "./constants";
-import { AppSidebar } from "./layouts";
 import { useUserStore } from "./stores";
-import { PrivateRoute } from "./routes";
-import { LoginPage } from "./pages/login";
-import { SplashScreen } from "./components";
 import { useEffect, useState } from "react";
-import { NotFoundPage, UnauthorizedPage } from "./pages";
-import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
+import { SplashScreen } from "./components";
+import { routes, PrivateRoute } from "./routes";
+import { Route, Routes, useLocation, useNavigate } from "react-router";
 
 function App() {
     const [isLoading, setIsLoading] = useState(true);
@@ -33,8 +29,8 @@ function App() {
             }
         }, 1500);
 
-        return () => clearTimeout(timer)
-    }, []);
+        return () => clearTimeout(timer);
+    }, [userInfo, location, navigate]);
 
     if (isLoading) {
         return <SplashScreen />;
@@ -44,25 +40,46 @@ function App() {
         <div className="flex container mx-auto">
             <Toaster richColors position="top-right" />
             <Routes>
-                <Route path="/" element={<AppSidebar />}>
-                    <Route element={<PrivateRoute allowedRoles={[ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT]} />}>
-                        <Route index element={<>Home Page</>} />
-                    </Route>
-                    <Route element={<PrivateRoute allowedRoles={[ROLE.ADMIN, ROLE.TEACHER]} />}>
-                        <Route path="dashboard" element={<>Dashboard <Outlet /></>}>
-                            <Route index element={<>Dashboard Home</>} />
-                            <Route element={<PrivateRoute allowedRoles={[ROLE.ADMIN]} />}>
-                                <Route path="settings" element={<>Dashboard Setting</>} />
+                {routes.map((route) => {
+                    if (route.layout) {
+                        return (
+                            <Route 
+                                key={route.path} 
+                                element={route.layout}
+                            >
+                                <Route 
+                                    path={route.path} 
+                                    element={
+                                        <PrivateRoute allowedRoles={route.allowedRoles}>
+                                            {route.element}
+                                        </PrivateRoute>
+                                    } 
+                                />
+                                {route.children && route.children.map((childRoute) => (
+                                    <Route 
+                                        key={`${route.path}-${childRoute.path}`} 
+                                        path={`${route.path}/${childRoute.path}`}
+                                        element={
+                                            <PrivateRoute allowedRoles={childRoute.allowedRoles}>
+                                                {childRoute.element}
+                                            </PrivateRoute>
+                                        } 
+                                    />
+                                ))}
                             </Route>
-                        </Route>
-                    </Route>
-                </Route>
-                <Route path="login" element={<LoginPage />} />
-                <Route path="unauthorized" element={<UnauthorizedPage />} />
-                <Route path="*" element={<NotFoundPage />} />
+                        );
+                    }
+                    return (
+                        <Route 
+                            key={route.path} 
+                            path={route.path} 
+                            element={route.element} 
+                        />
+                    );
+                })}
             </Routes>
         </div>
-    )
+    );
 }
 
 export default App;

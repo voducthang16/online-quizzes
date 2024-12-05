@@ -1,13 +1,14 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { ROLE } from "@/constants";
 import { useUserStore } from "@/stores";
 import { Outlet, Navigate } from "react-router";
 
 interface PrivateRouteProps {
     allowedRoles: ROLE[];
+    children?: ReactNode;
 }
 
-export const PrivateRoute: FC<PrivateRouteProps> = ({ allowedRoles }) => {
+export const PrivateRoute: FC<PrivateRouteProps> = ({ allowedRoles, children }) => {
     const { userInfo } = useUserStore();
 
     if (!userInfo) {
@@ -16,5 +17,9 @@ export const PrivateRoute: FC<PrivateRouteProps> = ({ allowedRoles }) => {
 
     const isAllowed = allowedRoles.includes(userInfo.role as ROLE);
 
-    return isAllowed ? <Outlet /> : <Navigate to="/unauthorized" replace />;
+    if (!isAllowed) {
+        return <Navigate to="/unauthorized" replace />;
+    }
+
+    return children ? <>{children}</> : <Outlet />;
 };

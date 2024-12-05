@@ -10,21 +10,26 @@ import {
     SidebarMenuItem,
     SidebarProvider,
 } from "@/components/ui/sidebar";
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { useUserStore } from "@/stores";
 import { routes } from "@/routes";
 import { ROLE } from "@/constants";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export const AppSidebar = () => {
     const navigate = useNavigate();
-    const { userInfo } = useUserStore();
-    const { logout, } = useUserStore();
+    const location = useLocation();
 
+    const isActiveRoute = (path: string) => {
+        return path === '' 
+            ? location.pathname === '/' 
+            : location.pathname.startsWith(`/${path}`);
+    };
 
-    const filteredRoutes = routes.filter(route => 
-        route.allowedRoles.includes(userInfo?.role as ROLE)
-    );
+    const { userInfo, logout } = useUserStore();
+
+    const filteredRoutes = routes.filter(route => route.isSidebar && route.allowedRoles.includes(userInfo?.role as ROLE));
 
     const handleLogout = () => {
         logout();
@@ -46,10 +51,16 @@ export const AppSidebar = () => {
                             <SidebarGroupContent>
                                 <SidebarMenu>
                                     {filteredRoutes.map((item) => (
-                                        <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuItem key={item.path}>
                                             <SidebarMenuButton asChild>
-                                                <NavLink to={item.path}>
-                                                    <item.icon />
+                                                <NavLink
+                                                    to={item.path}
+                                                    className={cn(
+                                                        "flex items-center p-2 rounded transition-colors duration-200",
+                                                        isActiveRoute(item.path) ? "bg-sidebar-active" : ""
+                                                    )}
+                                                >
+                                                    {item.icon && <item.icon />}
                                                     <span>{item.title}</span>
                                                 </NavLink>
                                             </SidebarMenuButton>
@@ -76,5 +87,5 @@ export const AppSidebar = () => {
             </SidebarProvider>
             <div className="flex-1"><Outlet /></div>
         </>
-    )
-}
+    );
+};
