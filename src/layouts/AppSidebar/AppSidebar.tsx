@@ -9,6 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarProvider,
+    SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { useUserStore } from "@/stores";
@@ -16,6 +17,7 @@ import { routes } from "@/routes";
 import { ROLE } from "@/constants";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks";
 
 export const AppSidebar = () => {
     const navigate = useNavigate();
@@ -41,9 +43,12 @@ export const AppSidebar = () => {
         navigate('/login', { replace: true });
     };
 
+    const isMobile = useIsMobile();
+
     return (
         <>
             <SidebarProvider>
+                {isMobile && <SidebarTrigger></SidebarTrigger>}
                 <Sidebar collapsible="icon" variant="sidebar">
                     <SidebarContent>
                         <SidebarGroup>

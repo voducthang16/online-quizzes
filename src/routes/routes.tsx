@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { AppSidebar } from '@/layouts';
 import { ROLE, ROUTES } from '@/constants';
-import { Landmark, LayoutDashboard, School, Users } from 'lucide-react';
+import { BookHeart, Landmark, LayoutDashboard, School, Users } from 'lucide-react';
 import {
     DashboardPage,
     UserPage,
@@ -10,6 +10,7 @@ import {
     NotFoundPage,
     UnauthorizedPage,
     BankPage,
+    SubjectPage,
 } from '@/pages';
 
 export interface RouteConfig {
@@ -38,6 +39,15 @@ export const routes: RouteConfig[] = [
         element: <UserPage />,
         title: 'User',
         icon: Users,
+        allowedRoles: [ROLE.ADMIN],
+        isSidebar: true,
+        layout: <AppSidebar />,
+    },
+    {
+        path: ROUTES.SUBJECT,
+        element: <SubjectPage />,
+        title: 'Subject',
+        icon: BookHeart,
         allowedRoles: [ROLE.ADMIN],
         isSidebar: true,
         layout: <AppSidebar />,
