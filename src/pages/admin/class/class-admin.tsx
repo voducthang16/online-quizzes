@@ -79,9 +79,9 @@ const ClassAdmin = () => {
     };
 
     return (
-        <div className="container mx-auto px-0 sm:px-6 lg:px-8 py-10">
-            <div className="flex justify-between">
-                <h1 className="text-2xl font-bold mb-5">Class Management</h1>
+        <>
+            <div className="mb-4 flex items-center justify-between">
+                <h1 className="text-2xl font-bold">Class Management</h1>
                 <ClassForm onSubmit={handleSubmit}/>
             </div>
             <ClassList 
@@ -89,7 +89,7 @@ const ClassAdmin = () => {
                 onSubmit={handleSubmit} 
                 onDelete={handleDelete}
             />
-        </div>
+        </>
     );
 };
 

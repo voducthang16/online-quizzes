@@ -47,8 +47,7 @@ export const AppSidebar = () => {
 
     return (
         <>
-            <SidebarProvider>
-                {isMobile && <SidebarTrigger></SidebarTrigger>}
+                {/* {isMobile && <SidebarTrigger></SidebarTrigger>} */}
                 <Sidebar collapsible="icon" variant="sidebar">
                     <SidebarContent>
                         <SidebarGroup>
@@ -89,10 +88,6 @@ export const AppSidebar = () => {
                         </SidebarGroup>
                     </SidebarContent>
                 </Sidebar>
-            </SidebarProvider>
-            <div className="bg-gray-50 flex-1 overflow-x-auto px-4 sm:px-0">
-                <Outlet />
-            </div>
         </>
     );
 };

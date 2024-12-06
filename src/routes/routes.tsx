@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { AppSidebar } from '@/layouts';
+import { AppSidebar, MainLayout } from '@/layouts';
 import { ROLE, ROUTES } from '@/constants';
 import { BookHeart, Landmark, LayoutDashboard, School, Users } from 'lucide-react';
 import {
@@ -32,7 +32,7 @@ export const routes: RouteConfig[] = [
         icon: LayoutDashboard,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
         isSidebar: true,
-        layout: <AppSidebar />,
+        layout: <MainLayout />,
     },
     {
         path: ROUTES.USER,
@@ -41,7 +41,7 @@ export const routes: RouteConfig[] = [
         icon: Users,
         allowedRoles: [ROLE.ADMIN],
         isSidebar: true,
-        layout: <AppSidebar />,
+        layout: <MainLayout />,
     },
     {
         path: ROUTES.SUBJECT,
@@ -50,7 +50,7 @@ export const routes: RouteConfig[] = [
         icon: BookHeart,
         allowedRoles: [ROLE.ADMIN],
         isSidebar: true,
-        layout: <AppSidebar />,
+        layout: <MainLayout />,
     },
     {
         path: ROUTES.CLASS,
@@ -59,7 +59,7 @@ export const routes: RouteConfig[] = [
         icon: School,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
         isSidebar: true,
-        layout: <AppSidebar />,
+        layout: <MainLayout />,
     },
     {
         path: ROUTES.BANK,
@@ -68,7 +68,7 @@ export const routes: RouteConfig[] = [
         icon: Landmark,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
         isSidebar: true,
-        layout: <AppSidebar />,
+        layout: <MainLayout />,
     },
     {
         path: ROUTES.LOGIN,
