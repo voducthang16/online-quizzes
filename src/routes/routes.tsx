@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { AppSidebar, MainLayout } from '@/layouts';
+import { MainLayout } from '@/layouts';
 import { ROLE, ROUTES } from '@/constants';
 import { BookHeart, Landmark, LayoutDashboard, School, Users } from 'lucide-react';
 import {
