@@ -1,7 +1,29 @@
+import { lazy, Suspense } from 'react';
+import { ROLE } from '@/constants';
+import { useUserStore } from '@/stores';
+import { LoadingSpinner } from '@/components';
+
+const SubjectAdmin = lazy(() => import('./admin/subject/subject-admin'));
+
 export const SubjectPage = () => {
+    const { userInfo } = useUserStore();
+
+    const SubjectComponent = () => {
+        switch (userInfo?.role) {
+            case ROLE.ADMIN:
+                return <SubjectAdmin />;
+            default:
+                return (
+                    <div className="text-center text-red-500">
+                        No dashboard available for your role
+                    </div>
+                );
+        }
+    };
+
     return (
-        <div>
-            <h1>Subject Page</h1>
-        </div>
-    );
-}
+        <Suspense fallback={<LoadingSpinner />}>
+            <SubjectComponent />
+        </Suspense>
+    )
+};

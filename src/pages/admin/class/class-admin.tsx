@@ -1,23 +1,12 @@
 import { toast } from 'sonner';
 import { useState } from "react";
-import { ClassModel } from "@/models";
+import { ClassModel, SubjectModel, UserModel } from "@/models";
 import { ClassList } from "./class-list";
 import { ClassForm, ClassFormValues } from "./class-form";
-
-const generateFakeClasses = (count: number): ClassModel[] => {
-    return Array.from({ length: count }, (_, i) => ({
-        id: `CLASS${i + 1}`,
-        name: `Class ${i + 1}`,
-        subjectId: `SUBJECT${i + 1}`,
-        teacherId: `TEACHER${i + 1}`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        isDeleted: false,
-    }));
-};
+import { CLASS_LIST } from '@/constants';
 
 const ClassAdmin = () => {
-    const [classes, setClasses] = useState<ClassModel[]>(generateFakeClasses(5));
+    const [classes, setClasses] = useState<ClassModel[]>(CLASS_LIST as any);
 
     const handleSubmit = (data: ClassFormValues, existingClass?: ClassModel) => {
         try {
@@ -42,6 +31,9 @@ const ClassAdmin = () => {
                     name: data.name,
                     subjectId: data.subjectId,
                     teacherId: data.teacherId,
+                    subject: { ...new SubjectModel() },
+                    teacher: { ...new UserModel() },
+                    students: [],
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     isDeleted: false,

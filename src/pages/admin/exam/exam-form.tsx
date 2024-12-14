@@ -1,69 +1,55 @@
 import { z } from 'zod';
-import { ClassModel } from "@/models";
+import { ExamModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
+import { CLASS_LIST, SUBJECT_LIST, QUESTION_LIST } from '@/constants';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SUBJECT_LIST, USER_LIST } from '@/constants/fake-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-const classFormSchema = z.object({
-    name: z.string().min(2, "Class name must be at least 2 characters long."),
+const examFormSchema = z.object({
+    name: z.string().min(2, "Exam name must be at least 2 characters long."),
     subjectId: z.string().min(1, "Subject is required"),
-    teacherId: z.string().min(1, "Teacher is required"),
+    classId: z.string().min(1, "Class is required"),
+    duration: z.number().min(1, "Duration must be at least 1 minute"),
+    questions: z.array(z.string()).min(1, "At least one question is required"),
 });
 
-export type ClassFormValues = z.infer<typeof classFormSchema>;
+export type ExamFormValues = z.infer<typeof examFormSchema>;
 
-interface ClassFormProps {
-    class?: ClassModel;
-    onSubmit: (data: ClassFormValues) => void;
+interface ExamFormProps {
+    exam?: ExamModel;
+    onSubmit: (data: ExamFormValues) => void;
 }
 
-export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) => {
+export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const teachers = USER_LIST.filter(user => user.role === 'Teacher');
 
-    const form = useForm<ClassFormValues>({
-        resolver: zodResolver(classFormSchema),
-        defaultValues: classData ? {
-            name: classData.name,
-            subjectId: classData.subjectId,
-            teacherId: classData.teacherId,
+    const form = useForm<ExamFormValues>({
+        resolver: zodResolver(examFormSchema),
+        defaultValues: exam ? {
+            name: exam.name,
+            subjectId: exam.subjectId,
+            classId: exam.classId,
+            duration: exam.duration,
+            questions: exam.questions.map(q => q.id),
         } : {
             name: '',
             subjectId: '',
-            teacherId: '',
+            classId: '',
+            duration: 60,
+            questions: [],
         }
     });
-
-    useEffect(() => {
-        if (!isDialogOpen) {
-            form.reset(classData ? {
-                name: classData.name,
-                subjectId: classData.subjectId,
-                teacherId: classData.teacherId,
-            } : {
-                name: '',
-                subjectId: '',
-                teacherId: '',
-            });
-        }
-    }, [isDialogOpen, form, classData]);
-
-    const handleSubmit = (data: ClassFormValues) => {
-        onSubmit(data);
-        setIsDialogOpen(false);
-    };
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                {classData ? (
+                {exam ? (
                     <Button
                         size="sm"
                         variant="secondary"
@@ -73,26 +59,26 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                     </Button>
                 ) : (
                     <Button>
-                        <Plus className="h-4 w-4 mr-2" /> Add Class
+                        <Plus className="h-4 w-4 mr-2" /> Add Exam
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>
-                        {classData ? 'Edit Class' : 'Create New Class'}
+                        {exam ? 'Edit Exam' : 'Create New Exam'}
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Class Name</FormLabel>
+                                    <FormLabel>Exam Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter class name" {...field} />
+                                        <Input placeholder="Enter exam name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -107,7 +93,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a subject" />
+                                                <SelectValue placeholder="Select subject" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -124,24 +110,42 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                         />
                         <FormField
                             control={form.control}
-                            name="teacherId"
+                            name="classId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Teacher</FormLabel>
+                                    <FormLabel>Class</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a teacher" />
+                                                <SelectValue placeholder="Select class" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {teachers.map((teacher) => (
-                                                <SelectItem key={teacher.id} value={teacher.id}>
-                                                    {teacher.fullName}
+                                            {CLASS_LIST.map((cls) => (
+                                                <SelectItem key={cls.id} value={cls.id}>
+                                                    {cls.name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="duration"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Duration (minutes)</FormLabel>
+                                    <FormControl>
+                                        <Input 
+                                            type="number" 
+                                            min={1}
+                                            {...field}
+                                            onChange={e => field.onChange(parseInt(e.target.value))}
+                                        />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -155,7 +159,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                                 Cancel
                             </Button>
                             <Button type="submit">
-                                {classData ? 'Update Class' : 'Create Class'}
+                                {exam ? 'Update Exam' : 'Create Exam'}
                             </Button>
                         </div>
                     </form>

@@ -1,101 +1,91 @@
 import { z } from 'zod';
-import { ROLE } from "@/constants";
-import { UserModel } from "@/models";
+import { BankModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FC, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-const userFormSchema = z.object({
-    email: z.string().email({ message: "Invalid email address." }),
-    role: z.nativeEnum(ROLE),
-    fullName: z.string().min(2, "Full name must be at least 2 characters long."),
+const bankFormSchema = z.object({
+    name: z.string().min(2, "Bank name must be at least 2 characters long."),
+    isPublic: z.boolean(),
 });
 
-export type UserFormValues = z.infer<typeof userFormSchema>;
+export type BankFormValues = z.infer<typeof bankFormSchema>;
 
-interface UserFormProps {
-    user?: UserModel;
-    onSubmit: (data: UserFormValues) => void;
+interface BankFormProps {
+    bank?: BankModel;
+    onSubmit: (data: BankFormValues) => void;
 }
 
-export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
+export const BankForm: FC<BankFormProps> = ({ bank, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const form = useForm<UserFormValues>({
-        resolver: zodResolver(userFormSchema),
-        defaultValues: user ? {
-            email: user.email,
-            role: user.role,
-            fullName: user.fullName || '',
+    const form = useForm<BankFormValues>({
+        resolver: zodResolver(bankFormSchema),
+        defaultValues: bank ? {
+            name: bank.name,
+            isPublic: bank.isPublic,
         } : {
-            email: '',
-            role: ROLE.STUDENT,
-            fullName: '',
+            name: '',
+            isPublic: false,
         }
     });
 
     useEffect(() => {
         if (!isDialogOpen) {
-            form.reset(user ? {
-                email: user.email,
-                role: user.role,
-                fullName: user.fullName || '',
+            form.reset(bank ? {
+                name: bank.name,
+                isPublic: bank.isPublic,
             } : {
-                email: '',
-                role: ROLE.STUDENT,
-                fullName: '',
+                name: '',
+                isPublic: false,
             });
         }
-    }, [isDialogOpen, form, user]);
+    }, [isDialogOpen, form, bank]);
 
-    const handleSubmit = (data: UserFormValues) => {
+    const handleSubmit = (data: BankFormValues) => {
         onSubmit(data);
-        onClose();
-    };
-
-    const onClose = () => {
         setIsDialogOpen(false);
-    }
+    };
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                {user ? (
+                {bank ? (
                     <Button
                         size="sm"
                         variant="secondary"
                         className="bg-gray-200 flex items-center w-8 h-8"
                     >
-                        <Pencil />
+                        <Pencil className="h-4 w-4" />
                     </Button>
                 ) : (
                     <Button>
-                        <Plus className="h-4 w-4" /> Add User
+                        <Plus className="h-4 w-4 mr-2" /> Add Bank
                     </Button>
                 )}
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {user ? 'Edit User' : 'Create New User'}
+                        {bank ? 'Edit Bank' : 'Create New Bank'}
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="email"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel>Bank Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter email" {...field} />
+                                        <Input placeholder="Enter bank name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -103,41 +93,24 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="role"
+                            name="isPublic"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Role</FormLabel>
+                                    <FormLabel>Visibility</FormLabel>
                                     <Select 
-                                        onValueChange={field.onChange} 
-                                        defaultValue={field.value}
-                                        disabled={!!user?.id}
+                                        onValueChange={(value) => field.onChange(value === 'true')}
+                                        defaultValue={field.value ? 'true' : 'false'}
                                     >
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a role" />
+                                                <SelectValue placeholder="Select visibility" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {Object.values(ROLE).map((role) => (
-                                                <SelectItem key={role} value={role}>
-                                                    {role}
-                                                </SelectItem>
-                                            ))}
+                                            <SelectItem value="true">Public</SelectItem>
+                                            <SelectItem value="false">Private</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="fullName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Full Name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter full name" {...field} />
-                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -146,12 +119,12 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                             <Button 
                                 type="button" 
                                 variant="outline" 
-                                onClick={() => onClose()}
+                                onClick={() => setIsDialogOpen(false)}
                             >
                                 Cancel
                             </Button>
                             <Button type="submit">
-                                {user ? 'Update User' : 'Create User'}
+                                {bank ? 'Update Bank' : 'Create Bank'}
                             </Button>
                         </div>
                     </form>

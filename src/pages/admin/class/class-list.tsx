@@ -19,12 +19,28 @@ export const ClassList = (props: ClassListProps) => {
             header: "Class Name",
         },
         {
-            accessorKey: "subjectId",
-            header: "Subject ID",
+            accessorKey: "subject",
+            header: "Subject",
+            cell: ({ row }) => {
+                const subject = row.original.subject;
+                return <span>{subject?.name || 'N/A'}</span>;
+            }
         },
         {
-            accessorKey: "teacherId",
-            header: "Teacher ID",
+            accessorKey: "teacher",
+            header: "Teacher",
+            cell: ({ row }) => {
+                const teacher = row.original.teacher;
+                return <span>{teacher?.fullName || 'N/A'}</span>;
+            }
+        },
+        {
+            accessorKey: "students",
+            header: "Students",
+            cell: ({ row }) => {
+                const students = row.original.students;
+                return <span>{students?.length || 0} students</span>;
+            }
         },
         {
             accessorKey: "createdAt",
@@ -59,5 +75,5 @@ export const ClassList = (props: ClassListProps) => {
 
     return (
         <DataTable columns={columns} data={classes} />
-    )
-}
+    );
+};

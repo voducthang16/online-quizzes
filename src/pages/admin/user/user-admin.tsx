@@ -1,24 +1,12 @@
 import { toast } from 'sonner';
 import { useState } from "react";
-import { ROLE } from "@/constants";
+import { ROLE, USER_LIST } from "@/constants";
 import { UserModel } from "@/models";
 import { UserList } from "./user-list";
 import { UserForm, UserFormValues } from "./user-form";
 
-const generateFakeUsers = (count: number): UserModel[] => {
-    return Array.from({ length: count }, (_, i) => ({
-        id: `USER${i + 1}`,
-        email: `${i % 2 === 0 ? 'teacher' : 'student'}${i + 1}@example.com`,
-        role: i % 2 === 0 ? ROLE.TEACHER : ROLE.STUDENT,
-        fullName: `${i % 2 === 0 ? 'Teacher' : 'Student'} FullName ${i + 1}`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        isDeleted: false,
-    }))
-}
-
 const UserAdmin = () => {
-    const [users, setUsers] = useState<UserModel[]>(generateFakeUsers(5));
+    const [users, setUsers] = useState<UserModel[]>(USER_LIST as any);
 
     const handleSubmit = (data: UserFormValues, existingUser?: UserModel) => {
         try {

@@ -12,12 +12,12 @@ interface UserState {
 
 export const useUserStore = create<UserState>((set) => ({
     userInfo: LocalStorageUtil.get<Partial<UserModel>>(USER_INFO_KEY),
-    
+
     setUserInfo: (userInfo: Partial<UserModel>) => {
         LocalStorageUtil.set(USER_INFO_KEY, userInfo);
         set({ userInfo });
     },
-    
+
     logout: () => {
         LocalStorageUtil.clear();
         set({ userInfo: null });

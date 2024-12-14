@@ -3,15 +3,15 @@ import { useUserStore } from "@/stores";
 import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components";
 
-const BankAdmin = lazy(() => import('./admin/bank/bank-admin'));
+const QuestionAdmin = lazy(() => import('./admin/question/question-admin'));
 
-export const BankPage = () => {
+export const QuestionPage = () => {
     const { userInfo } = useUserStore();
 
-    const BankComponent = () => {
+    const QuestionComponent = () => {
         switch (userInfo?.role) {
             case ROLE.ADMIN:
-                return <BankAdmin />;
+                return <QuestionAdmin />;
             default:
                 return (
                     <div className="text-center text-red-500">
@@ -23,7 +23,7 @@ export const BankPage = () => {
 
     return (
         <Suspense fallback={<LoadingSpinner />}>
-            <BankComponent />
+            <QuestionComponent />
         </Suspense>
     )
 };

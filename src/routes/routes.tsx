@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { MainLayout } from '@/layouts';
 import { ROLE, ROUTES } from '@/constants';
-import { BookHeart, Landmark, LayoutDashboard, School, Users } from 'lucide-react';
+import { BookHeart, FileQuestion, Landmark, LayoutDashboard, School, Users, Vote } from 'lucide-react';
 import {
     DashboardPage,
     UserPage,
@@ -11,7 +11,9 @@ import {
     UnauthorizedPage,
     BankPage,
     SubjectPage,
+    QuestionPage,
 } from '@/pages';
+import { ExamPage } from '@/pages/exam';
 
 export interface RouteConfig {
     path: string;
@@ -66,6 +68,24 @@ export const routes: RouteConfig[] = [
         element: <BankPage />,
         title: 'Bank',
         icon: Landmark,
+        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
+        isSidebar: true,
+        layout: <MainLayout />,
+    },
+    {
+        path: ROUTES.EXAM,
+        element: <ExamPage />,
+        title: 'Exam',
+        icon: Vote,
+        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
+        isSidebar: true,
+        layout: <MainLayout />,
+    },
+    {
+        path: ROUTES.QUESTION,
+        element: <QuestionPage />,
+        title: 'Question',
+        icon: FileQuestion,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
         isSidebar: true,
         layout: <MainLayout />,

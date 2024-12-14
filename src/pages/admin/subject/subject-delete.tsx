@@ -1,21 +1,23 @@
-import { FC, useState } from "react";
-import { Trash2 } from "lucide-react";
-import { ClassModel } from "@/models";
+import { FC, useState } from 'react';
+import { SubjectModel } from "@/models";
+import { Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog, ConfirmDialogType } from "@/components";
+import { ConfirmDialog, ConfirmDialogType } from '@/components';
 
-interface DeleteClassDialogProps {
-    class: ClassModel;
-    onDelete: (classId: string) => void;
+interface DeleteSubjectDialogProps {
+    subject: SubjectModel;
+    onDelete: (subjectId: string) => void;
 }
 
-export const DeleteClassDialog: FC<DeleteClassDialogProps> = (props) => {
-    const { class: classData, onDelete } = props;
+export const DeleteSubjectDialog: FC<DeleteSubjectDialogProps> = ({ 
+    subject, 
+    onDelete,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleConfirm = () => {
+    const handleDelete = () => {
+        onDelete(subject.id);
         setIsOpen(false);
-        onDelete(classData.id);
     };
 
     return (
@@ -33,16 +35,15 @@ export const DeleteClassDialog: FC<DeleteClassDialogProps> = (props) => {
                 onOpenChange={setIsOpen}
                 title="Confirm Action"
                 description={<>
-                    Are you sure you want to delete the class:
+                    Are you sure you want to delete the subject:
                     <div className="my-2 p-2 bg-muted rounded">
-                        <div><strong>Name:</strong> {classData.name}</div>
-                        <div><strong>Subject ID:</strong> {classData.subjectId}</div>
-                        <div><strong>Teacher ID:</strong> {classData.teacherId}</div>
+                        <div><strong>Name:</strong> {subject.name}</div>
+                        <div><strong>Description:</strong> {subject.description}</div>
                     </div>
                     This action cannot be undone.
                 </>}
                 type={ConfirmDialogType.Destructive}
-                onConfirm={handleConfirm}
+                onConfirm={handleDelete}
             />
         </>
     );
