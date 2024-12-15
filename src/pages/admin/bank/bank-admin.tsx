@@ -1,89 +1,70 @@
 import { toast } from 'sonner';
-import { useState } from "react";
-import { BankModel } from '@/models';
-import { BankList } from './bank-list';
-import { BankForm, BankFormValues } from './bank-form';
-
-const generateFakeBanks = (count: number) => {
-    return Array.from({ length: count }, (_, i) => ({
-        id: `BANK${i + 1}`,
-        name: `Bank ${i + 1}`,
-        isPublic: i % 2 === 0,
-        createdBy: {
-            id: `USER${i + 1}`,
-            email: `teacher${i + 1}@example.com`,
-            full_name: `Teacher ${i + 1}`,
-            role: 'Teacher',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            isDeleted: false
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        isDeleted: false,
-    }));
-};
+import { useState, useEffect } from "react";
+import { BankApi } from "@/api/page";
+import { BankModel } from "@/models";
+import { BankList } from "./bank-list";
+import { LoadingSpinner } from "@/components";
+import { BankForm, BankFormValues } from "./bank-form";
 
 const BankAdmin = () => {
-    const [banks, setBanks] = useState<BankModel[]>(generateFakeBanks(5) as any);
+    const [banks, setBanks] = useState<BankModel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleSubmit = (data: BankFormValues, existingBank?: BankModel) => {
+    const fetchBanks = async () => {
         try {
-            if (existingBank) {
-                setBanks(currentBanks => 
-                    currentBanks.map(bank => 
-                        bank.id === existingBank.id 
-                        ? {
-                            ...bank,
-                            ...data,
-                            updated_at: new Date().toISOString()
-                        } : bank
-                    )
-                );
-
-                toast.success('Bank Updated', {
-                    description: `${data.name} has been successfully updated.`
-                });
-            } else {
-                const newBank: BankModel = {
-                    id: new Date().getTime().toString(),
-                    name: data.name,
-                    isPublic: data.isPublic,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    isDeleted: false,
-                };
-
-                setBanks(currentBanks => [newBank, ...currentBanks]);
-
-                toast.success('Bank Created', {
-                    description: `${data.name} has been successfully added.`
-                });
+            const response = await BankApi.getAllBanks();
+            if (response.data) {
+                setBanks(response.data.data);
             }
-        } catch (error) {
+        } catch (error: any) {
+            toast.error('Failed to fetch banks', {
+                description: error?.message || 'Unable to load banks. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchBanks();
+    }, []);
+
+    const handleSubmit = async () => {
+        try {
+            await fetchBanks();
+        } catch (error: any) {
             toast.error('Operation Failed', {
-                description: 'Unable to process bank operation. Please try again.'
+                description: error?.message || 'Unable to process bank operation. Please try again.'
             });
         }
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: number) => {
         try {
-            const bankToDelete = banks.find(bank => bank.id === id);
-
+            const bankToDelete = banks.find(bank => bank.question_bank_id === id);
+            
+            await BankApi.deleteBank(id);
             setBanks(currentBanks => 
-                currentBanks.filter(bank => bank.id !== id)
+                currentBanks.filter(bank => bank.question_bank_id !== id)
             );
 
             toast.success('Bank Deleted', {
-                description: `${bankToDelete?.name || 'Bank'} has been removed.`,
+                description: `${bankToDelete?.bank_name || 'Bank'} has been removed.`,
             });
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Deletion Failed', {
-                description: 'Unable to delete bank. Please try again.'
+                description: error?.message || 'Unable to delete bank. Please try again.'
             });
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
     return (
         <>
@@ -91,11 +72,7 @@ const BankAdmin = () => {
                 <h1 className="text-2xl font-bold">Bank Management</h1>
                 <BankForm onSubmit={handleSubmit}/>
             </div>
-            <BankList
-                banks={banks} 
-                onSubmit={handleSubmit} 
-                onDelete={handleDelete}
-            />
+            <BankList banks={banks} onSubmit={handleSubmit} onDelete={handleDelete} />
         </>
     );
 };

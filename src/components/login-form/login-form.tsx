@@ -36,6 +36,7 @@ export const LoginForm = () => {
                     full_name: data.full_name,
                     email: data.email,
                     role: data.role,
+                    user_id: data.user_id,
                 });
 
                 toast.success('Login Successful', {

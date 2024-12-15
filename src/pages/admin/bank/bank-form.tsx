@@ -1,56 +1,72 @@
 import { z } from 'zod';
 import { BankModel } from "@/models";
 import { useForm } from 'react-hook-form';
+import { FC, useState } from 'react';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FC, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { BankApi } from '@/api/page';
+import { toast } from 'sonner';
+import { useUserStore } from '@/stores';
 
 const bankFormSchema = z.object({
-    name: z.string().min(2, "Bank name must be at least 2 characters long."),
-    isPublic: z.boolean(),
+    bank_name: z.string().min(2, "Bank name must be at least 2 characters long."),
+    is_public: z.boolean()
 });
 
 export type BankFormValues = z.infer<typeof bankFormSchema>;
 
 interface BankFormProps {
     bank?: BankModel;
-    onSubmit: (data: BankFormValues) => void;
+    onSubmit: (data: BankFormValues, existingBank?: BankModel) => void;
 }
 
 export const BankForm: FC<BankFormProps> = ({ bank, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { userInfo } = useUserStore();
 
     const form = useForm<BankFormValues>({
         resolver: zodResolver(bankFormSchema),
         defaultValues: bank ? {
-            name: bank.name,
-            isPublic: bank.isPublic,
+            bank_name: bank.bank_name,
+            is_public: bank.is_public,
         } : {
-            name: '',
-            isPublic: false,
+            bank_name: '',
+            is_public: false,
         }
     });
 
-    useEffect(() => {
-        if (!isDialogOpen) {
-            form.reset(bank ? {
-                name: bank.name,
-                isPublic: bank.isPublic,
-            } : {
-                name: '',
-                isPublic: false,
-            });
-        }
-    }, [isDialogOpen, form, bank]);
+    const handleSubmit = async (data: BankFormValues) => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
 
-    const handleSubmit = (data: BankFormValues) => {
-        onSubmit(data);
-        setIsDialogOpen(false);
+        try {
+            const submitAction = bank
+                ? BankApi.updateBank({ payload: { question_bank_id: bank.question_bank_id, ...data } })
+                : BankApi.createBank({ payload: { ...data, created_by: userInfo.user_id } });
+
+            const response = await submitAction;
+
+            if (!response.data.code) {
+                toast.success(bank ? 'Bank Updated' : 'Bank Created', {
+                    description: `${data.bank_name} has been ${bank ? 'updated' : 'created'} successfully.`
+                });
+
+                onSubmit(response.data.data);
+                setIsDialogOpen(false);
+            }
+        } catch (error: any) {
+            toast.error('Operation Failed', {
+                description: error?.message || 'Unable to process bank operation.'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -80,7 +96,7 @@ export const BankForm: FC<BankFormProps> = ({ bank, onSubmit }) => {
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="bank_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Bank Name</FormLabel>
@@ -93,7 +109,7 @@ export const BankForm: FC<BankFormProps> = ({ bank, onSubmit }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="isPublic"
+                            name="is_public"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Visibility</FormLabel>
@@ -120,11 +136,12 @@ export const BankForm: FC<BankFormProps> = ({ bank, onSubmit }) => {
                                 type="button" 
                                 variant="outline" 
                                 onClick={() => setIsDialogOpen(false)}
+                                disabled={isSubmitting}
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit">
-                                {bank ? 'Update Bank' : 'Create Bank'}
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? 'Saving...' : (bank ? 'Update Bank' : 'Create Bank')}
                             </Button>
                         </div>
                     </form>

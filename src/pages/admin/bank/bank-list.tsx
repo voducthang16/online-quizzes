@@ -3,11 +3,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
 import { BankForm, BankFormValues } from "./bank-form";
 import { DeleteBankDialog } from "./bank-delete";
+import { formatDateByTimezone } from "@/utils";
 
 interface BankListProps {
     banks: BankModel[];
     onSubmit: (data: BankFormValues, existingBank?: BankModel) => void;
-    onDelete: (bankId: string) => void;
+    onDelete: (bankId: number) => void;
 }
 
 export const BankList = (props: BankListProps) => {
@@ -15,14 +16,14 @@ export const BankList = (props: BankListProps) => {
 
     const columns: ColumnDef<BankModel>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "bank_name",
             header: "Bank Name",
         },
         {
-            accessorKey: "isPublic",
+            accessorKey: "is_public",
             header: "Visibility",
             cell: ({ row }) => {
-                const isPublic = row.getValue("isPublic");
+                const isPublic = row.getValue("is_public");
                 return <span>{isPublic ? 'Public' : 'Private'}</span>;
             }
         },
@@ -30,7 +31,7 @@ export const BankList = (props: BankListProps) => {
             accessorKey: "createdBy",
             header: "Created By",
             cell: ({ row }) => {
-                const createdBy = row.original.createdBy;
+                const createdBy = row.original.created_by;
                 return <span>{createdBy?.full_name || 'N/A'}</span>;
             }
         },
@@ -38,16 +39,14 @@ export const BankList = (props: BankListProps) => {
             accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("created_at"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("created_at"))}</span>
             },
         },
         {
             accessorKey: "updated_at",
             header: "Updated At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updated_at"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("updated_at"))}</span>
             },
         },
         {

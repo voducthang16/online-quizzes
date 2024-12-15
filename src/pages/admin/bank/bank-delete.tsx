@@ -6,7 +6,7 @@ import { ConfirmDialog, ConfirmDialogType } from '@/components';
 
 interface DeleteBankDialogProps {
     bank: BankModel;
-    onDelete: (bankId: string) => void;
+    onDelete: (bankId: number) => void;
 }
 
 export const DeleteBankDialog: FC<DeleteBankDialogProps> = ({ 
@@ -16,7 +16,7 @@ export const DeleteBankDialog: FC<DeleteBankDialogProps> = ({
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDelete = () => {
-        onDelete(bank.id);
+        onDelete(bank.question_bank_id);
         setIsOpen(false);
     };
 
@@ -37,9 +37,9 @@ export const DeleteBankDialog: FC<DeleteBankDialogProps> = ({
                 description={<>
                     Are you sure you want to delete the bank:
                     <div className="my-2 p-2 bg-muted rounded">
-                        <div><strong>Name:</strong> {bank.name}</div>
-                        <div><strong>Status:</strong> {bank.isPublic ? 'Public' : 'Private'}</div>
-                        <div><strong>Created By:</strong> {bank.createdBy?.full_name}</div>
+                        <div><strong>Name:</strong> {bank.bank_name}</div>
+                        <div><strong>Status:</strong> {bank.is_public ? 'Public' : 'Private'}</div>
+                        <div><strong>Created By:</strong> {bank.created_by?.full_name}</div>
                     </div>
                     This action cannot be undone.
                 </>}
