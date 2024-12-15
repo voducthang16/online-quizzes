@@ -4,7 +4,7 @@ import { UserModel } from "@/models";
 import { UserList } from "./user-list";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components";
-import { UserForm, UserFormValues } from "./user-form";
+import { UserForm } from "./user-form";
 
 const UserAdmin = () => {
     const [users, setUsers] = useState<UserModel[]>([]);
@@ -29,25 +29,9 @@ const UserAdmin = () => {
         fetchUsers();
     }, []);
 
-    const handleSubmit = (newUserData: UserFormValues, existingUser?: UserModel) => {
+    const handleSubmit = async () => {
         try {
-            if (existingUser) {
-                setUsers(currentUsers => 
-                    currentUsers.map(user => 
-                        user.user_id === existingUser.user_id 
-                        ? {
-                            ...user,
-                            ...newUserData,
-                        } : user
-                    )
-                );
-            } else {
-                const newUser = {
-                    ...newUserData,
-                } as UserModel;
-
-                setUsers(currentUsers => [newUser, ...currentUsers]);
-            }
+            await fetchUsers();
         } catch (error: any) {
             toast.error('Operation Failed', {
                 description: error?.message || 'Unable to process user operation. Please try again.'

@@ -1,6 +1,7 @@
 import { BaseModel } from "./BaseModel";
 
 export class SubjectModel extends BaseModel {
-    name: string;
+    subject_id: string;
+    subject_name: string;
     description: string;
 };

@@ -21,5 +21,12 @@ export const API = {
         REGISTER: 'users/register',
         GET_ALL: 'users',
         UPDATE: 'users/{0}',
-    }
+    },
+    SUBJECT: {
+        CREATE: 'subjects',
+        DELETE: 'subjects/{0}',
+        UPDATE: 'subjects/{0}',
+        GET_ALL: 'subjects',
+        GET_DETAIL: 'subjects/{0}',
+    },
 }

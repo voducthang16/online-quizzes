@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { toast } from 'sonner';
 import { SubjectModel } from "@/models";
+import { SubjectApi } from '@/api/page';
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -10,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const subjectFormSchema = z.object({
-    name: z.string().min(3, { message: "Name must be at least 3 characters." }),
+    subject_name: z.string().min(3, { message: "Name must be at least 3 characters." }),
     description: z.string().min(3, { message: "Description must be at least 3 characters." }),
 });
 
@@ -23,14 +25,15 @@ interface SubjectFormProps {
 
 export const SubjectForm: FC<SubjectFormProps> = ({ subject, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<SubjectFormValues>({
         resolver: zodResolver(subjectFormSchema),
         defaultValues: subject ? {
-            name: subject.name,
+            subject_name: subject.subject_name,
             description: subject.description,
         } : {
-            name: '',
+            subject_name: '',
             description: '',
         }
     });
@@ -38,18 +41,42 @@ export const SubjectForm: FC<SubjectFormProps> = ({ subject, onSubmit }) => {
     useEffect(() => {
         if (!isDialogOpen) {
             form.reset(subject ? {
-                name: subject.name,
+                subject_name: subject.subject_name,
                 description: subject.description,
             } : {
-                name: '',
+                subject_name: '',
                 description: '',
             });
         }
     }, [isDialogOpen, form, subject]);
 
-    const handleSubmit = (data: SubjectFormValues) => {
-        onSubmit(data);
-        onClose();
+    const handleSubmit = async (data: SubjectFormValues) => {
+        if (isSubmitting) return;
+
+        try {
+            setIsSubmitting(true);
+
+            const submitAction = subject 
+                ? SubjectApi.updateSubject({ payload: { subject_id: subject.subject_id, ...data } })
+                : SubjectApi.createSubject({ payload: data });
+
+            const response = await submitAction;
+
+            if (!response.data.code) {
+                toast.success(subject ? 'Subject Updated' : 'Subject Created', {
+                    description: `${data.subject_name} has been ${subject ? 'updated' : 'created'} successfully.`
+                });
+
+                onSubmit(response.data.data);
+                onClose();
+            }
+        } catch (error: any) {
+            toast.error('Operation Failed', {
+                description: error?.message || 'Unable to process subject operation.'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const onClose = () => {
@@ -83,7 +110,7 @@ export const SubjectForm: FC<SubjectFormProps> = ({ subject, onSubmit }) => {
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="subject_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
@@ -115,8 +142,8 @@ export const SubjectForm: FC<SubjectFormProps> = ({ subject, onSubmit }) => {
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit">
-                                {subject ? 'Update Subject' : 'Create Subject'}
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? 'Saving...' : (subject ? 'Update Subject' : 'Create Subject')}
                             </Button>
                         </div>
                     </form>

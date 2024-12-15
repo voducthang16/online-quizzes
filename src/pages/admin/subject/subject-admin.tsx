@@ -1,69 +1,70 @@
 import { toast } from 'sonner';
-import { useState } from "react";
-import { SUBJECT_LIST } from "@/constants";
+import { SubjectApi } from "@/api/page";
 import { SubjectModel } from "@/models";
 import { SubjectList } from "./subject-list";
-import { SubjectForm, SubjectFormValues } from "./subject-form";
+import { useEffect, useState } from "react";
+import { LoadingSpinner } from "@/components";
+import { SubjectForm } from "./subject-form";
 
 const SubjectAdmin = () => {
-    const [subjects, setSubjects] = useState<SubjectModel[]>(SUBJECT_LIST as any);
+    const [subjects, setSubjects] = useState<SubjectModel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleSubmit = (data: SubjectFormValues, existingSubject?: SubjectModel) => {
+    const fetchSubjects = async () => {
         try {
-            if (existingSubject) {
-                setSubjects(currentSubjects => 
-                    currentSubjects.map(subject => 
-                        subject.id === existingSubject.id 
-                        ? {
-                            ...subject,
-                            ...data,
-                            updated_at: new Date().toISOString()
-                        } : subject
-                    )
-                );
-
-                toast.success('Subject Updated', {
-                    description: `${data.name} has been successfully updated.`
-                });
-            } else {
-                const newSubject: SubjectModel = {
-                    id: new Date().getTime().toString(),
-                    name: data.name,
-                    description: data.description,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    isDeleted: false,
-                };
-
-                setSubjects(currentSubjects => [newSubject, ...currentSubjects]);
-
-                toast.success('Subject Created', {
-                    description: `${data.name} has been successfully added.`
-                });
+            const response = await SubjectApi.getAllSubjects();
+            if (response.data) {
+                setSubjects(response.data.data);
             }
-        } catch (error) {
+        } catch (error: any) {
+            toast.error('Failed to fetch subjects', {
+                description: error?.message || 'Unable to load subjects. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSubjects();
+    }, []);
+
+    const handleSubmit = async () => {
+        try {
+            await fetchSubjects();
+        } catch (error: any) {
             toast.error('Operation Failed', {
-                description: 'Unable to process subject operation. Please try again.'
+                description: error?.message || 'Unable to process subject operation.'
             });
         }
-    }
+    };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         try {
             const subjectToDelete = subjects.find(subject => subject.id === id);
+
+            await SubjectApi.deleteSubject(id);
 
             setSubjects(currentSubjects => 
                 currentSubjects.filter(subject => subject.id !== id)
             );
 
             toast.success('Subject Deleted', {
-                description: `${subjectToDelete?.name || 'Subject'} has been removed.`,
+                description: `${subjectToDelete?.subject_name || 'Subject'} has been removed.`,
             });
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Deletion Failed', {
-                description: 'Unable to delete subject. Please try again.'
+                description: error?.message || 'Unable to delete subject.'
             });
         }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoadingSpinner />
+            </div>
+        );
     }
 
     return (

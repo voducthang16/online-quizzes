@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
 import { SubjectForm, SubjectFormValues } from "./subject-form";
 import { DeleteSubjectDialog } from "./subject-delete";
+import { formatDateByTimezone } from "@/utils";
 
 interface SubjectListProps {
     subjects: SubjectModel[];
@@ -16,7 +17,7 @@ export const SubjectList = (props: SubjectListProps) => {
 
     const columns: ColumnDef<SubjectModel>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "subject_name",
             header: "Name",
         },
         {
@@ -27,16 +28,14 @@ export const SubjectList = (props: SubjectListProps) => {
             accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("created_at"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("created_at"))}</span>
             },
         },
         {
             accessorKey: "updated_at",
             header: "Updated At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updated_at"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("updated_at"))}</span>
             },
         },
         {
