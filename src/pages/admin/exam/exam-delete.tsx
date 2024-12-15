@@ -6,7 +6,7 @@ import { ConfirmDialog, ConfirmDialogType } from '@/components';
 
 interface DeleteExamDialogProps {
     exam: ExamModel;
-    onDelete: (examId: string) => void;
+    onDelete: (examId: number) => void;
 }
 
 export const DeleteExamDialog: FC<DeleteExamDialogProps> = ({ exam, onDelete }) => {
@@ -29,7 +29,7 @@ export const DeleteExamDialog: FC<DeleteExamDialogProps> = ({ exam, onDelete }) 
                 description={<>
                     Are you sure you want to delete this exam:
                     <div className="my-2 p-2 bg-muted rounded">
-                        <div><strong>Name:</strong> {exam.name}</div>
+                        <div><strong>Name:</strong> {exam.exam_name}</div>
                         <div><strong>Subject:</strong> {exam.subject?.subject_name}</div>
                         <div><strong>Class:</strong> {exam.class?.class_name}</div>
                         <div><strong>Questions:</strong> {exam.questions?.length}</div>
@@ -38,7 +38,7 @@ export const DeleteExamDialog: FC<DeleteExamDialogProps> = ({ exam, onDelete }) 
                 </>}
                 type={ConfirmDialogType.Destructive}
                 onConfirm={() => {
-                    onDelete(exam.id);
+                    onDelete(exam.exam_id);
                     setIsOpen(false);
                 }}
             />

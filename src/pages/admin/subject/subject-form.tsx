@@ -20,7 +20,7 @@ export type SubjectFormValues = z.infer<typeof subjectFormSchema>;
 
 interface SubjectFormProps {
     subject?: SubjectModel;
-    onSubmit: (data: SubjectFormValues) => void;
+    onSubmit: () => void;
 }
 
 export const SubjectForm: FC<SubjectFormProps> = ({ subject, onSubmit }) => {
@@ -67,7 +67,7 @@ export const SubjectForm: FC<SubjectFormProps> = ({ subject, onSubmit }) => {
                     description: `${data.subject_name} has been ${subject ? 'updated' : 'created'} successfully.`
                 });
 
-                onSubmit(response.data.data);
+                onSubmit();
                 onClose();
             }
         } catch (error: any) {

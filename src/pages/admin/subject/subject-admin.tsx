@@ -39,14 +39,14 @@ const SubjectAdmin = () => {
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: number) => {
         try {
-            const subjectToDelete = subjects.find(subject => subject.id === id);
+            const subjectToDelete = subjects.find(subject => subject.subject_id === id);
 
             await SubjectApi.deleteSubject(id);
 
             setSubjects(currentSubjects => 
-                currentSubjects.filter(subject => subject.id !== id)
+                currentSubjects.filter(subject => subject.subject_id !== id)
             );
 
             toast.success('Subject Deleted', {

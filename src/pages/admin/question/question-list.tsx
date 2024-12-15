@@ -1,13 +1,14 @@
 import { QuestionModel } from "@/models";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
-import { QuestionForm, QuestionFormValues } from "./question-form";
+import { QuestionForm } from "./question-form";
 import { DeleteQuestionDialog } from "./question-delete";
+import { formatDateByTimezone } from "@/utils";
 
 interface QuestionListProps {
     questions: QuestionModel[];
-    onSubmit: (data: QuestionFormValues, existingQuestion?: QuestionModel) => void;
-    onDelete: (questionId: string) => void;
+    onSubmit: () => void;
+    onDelete: (questionId: number) => void;
 }
 
 export const QuestionList = (props: QuestionListProps) => {
@@ -15,35 +16,37 @@ export const QuestionList = (props: QuestionListProps) => {
 
     const columns: ColumnDef<QuestionModel>[] = [
         {
-            accessorKey: "content",
+            accessorKey: "question",
             header: "Question",
             cell: ({ row }) => {
-                const content = row.getValue("content") as string;
+                const content = row.getValue("question") as string;
                 return <div className="max-w-[400px] truncate">{content}</div>;
             }
         },
+        // {
+        //     accessorKey: "bank",
+        //     header: "Bank",
+        //     cell: ({ row }) => {
+        //         const bank = row.original.bank;
+        //         return <span>{bank?.bank_name || 'N/A'}</span>;
+        //     }
+        // },
         {
-            accessorKey: "bank",
-            header: "Bank",
-            cell: ({ row }) => {
-                const bank = row.original.bank;
-                return <span>{bank?.name || 'N/A'}</span>;
-            }
-        },
-        {
-            accessorKey: "correctAnswer",
+            accessorKey: "correct_answer",
             header: "Correct Answer",
-            cell: ({ row }) => {
-                const correctAnswer = row.getValue("correctAnswer") as string;
-                return <span>{correctAnswer}</span>;
-            }
         },
         {
             accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("created_at"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("created_at"))}</span>
+            },
+        },
+        {
+            accessorKey: "updated_at",
+            header: "Updated At",
+            cell: ({ row }) => {
+                return <span>{formatDateByTimezone(row.getValue("updated_at"))}</span>
             },
         },
         {
@@ -53,7 +56,7 @@ export const QuestionList = (props: QuestionListProps) => {
                 const question = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
-                        <QuestionForm isHideImport question={question} onSubmit={(data) => onSubmit(data, question)}/>
+                        <QuestionForm isHideImport question={question} onSubmit={onSubmit}/>
                         <DeleteQuestionDialog question={question} onDelete={onDelete} />
                     </div>
                 )

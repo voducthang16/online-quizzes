@@ -1,13 +1,13 @@
-import { BankModel } from "@/models";
+import { BankModel, UserModel } from "@/models";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
-import { BankForm, BankFormValues } from "./bank-form";
+import { BankForm } from "./bank-form";
 import { DeleteBankDialog } from "./bank-delete";
 import { formatDateByTimezone } from "@/utils";
 
 interface BankListProps {
     banks: BankModel[];
-    onSubmit: (data: BankFormValues, existingBank?: BankModel) => void;
+    onSubmit: () => void;
     onDelete: (bankId: number) => void;
 }
 
@@ -31,7 +31,7 @@ export const BankList = (props: BankListProps) => {
             accessorKey: "createdBy",
             header: "Created By",
             cell: ({ row }) => {
-                const createdBy = row.original.created_by;
+                const createdBy = row.original.created_by as UserModel;
                 return <span>{createdBy?.full_name || 'N/A'}</span>;
             }
         },
@@ -56,7 +56,7 @@ export const BankList = (props: BankListProps) => {
                 const bank = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
-                        <BankForm bank={bank} onSubmit={(data) => onSubmit(data, bank)}/>
+                        <BankForm bank={bank} onSubmit={onSubmit}/>
                         <DeleteBankDialog bank={bank} onDelete={onDelete} />
                     </div>
                 )

@@ -22,7 +22,7 @@ export type ClassFormValues = z.infer<typeof classFormSchema>;
 
 interface ClassFormProps {
     class?: ClassModel;
-    onSubmit: (data: ClassFormValues) => void;
+    onSubmit: () => void;
 }
 
 export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) => {
@@ -114,7 +114,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                     description: `${data.class_name} has been ${classData ? 'updated' : 'created'} successfully.`
                 });
 
-                onSubmit(response.data.data);
+                onSubmit();
                 setIsDialogOpen(false);
             }
         } catch (error: any) {

@@ -6,7 +6,7 @@ import { ConfirmDialog, ConfirmDialogType } from '@/components';
 
 interface DeleteQuestionDialogProps {
     question: QuestionModel;
-    onDelete: (questionId: string) => void;
+    onDelete: (questionId: number) => void;
 }
 
 export const DeleteQuestionDialog: FC<DeleteQuestionDialogProps> = ({ 
@@ -16,7 +16,7 @@ export const DeleteQuestionDialog: FC<DeleteQuestionDialogProps> = ({
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDelete = () => {
-        onDelete(question.id);
+        onDelete(question.question_bank_id);
         setIsOpen(false);
     };
 
@@ -43,9 +43,9 @@ export const DeleteQuestionDialog: FC<DeleteQuestionDialogProps> = ({
                 description={<>
                     Are you sure you want to delete this question:
                     <div className="my-2 p-2 bg-muted rounded">
-                        <div><strong>Question:</strong> {truncateContent(question.content)}</div>
-                        <div><strong>Bank:</strong> {question.bank?.name}</div>
-                        <div><strong>Correct Answer:</strong> {question.correctAnswer}</div>
+                        <div><strong>Question:</strong> {truncateContent(question.question)}</div>
+                        <div><strong>Bank:</strong> {question.bank?.bank_name}</div>
+                        <div><strong>Correct Answer:</strong> {question.correct_answer}</div>
                     </div>
                     This action cannot be undone.
                 </>}

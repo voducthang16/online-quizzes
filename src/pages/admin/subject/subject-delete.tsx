@@ -6,7 +6,7 @@ import { ConfirmDialog, ConfirmDialogType } from '@/components';
 
 interface DeleteSubjectDialogProps {
     subject: SubjectModel;
-    onDelete: (subjectId: string) => void;
+    onDelete: (subjectId: number) => void;
 }
 
 export const DeleteSubjectDialog: FC<DeleteSubjectDialogProps> = ({ 
@@ -16,7 +16,7 @@ export const DeleteSubjectDialog: FC<DeleteSubjectDialogProps> = ({
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDelete = () => {
-        onDelete(subject.id);
+        onDelete(subject.subject_id);
         setIsOpen(false);
     };
 

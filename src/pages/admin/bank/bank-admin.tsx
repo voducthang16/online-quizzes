@@ -4,7 +4,7 @@ import { BankApi } from "@/api/page";
 import { BankModel } from "@/models";
 import { BankList } from "./bank-list";
 import { LoadingSpinner } from "@/components";
-import { BankForm, BankFormValues } from "./bank-form";
+import { BankForm } from "./bank-form";
 
 const BankAdmin = () => {
     const [banks, setBanks] = useState<BankModel[]>([]);

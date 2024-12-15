@@ -5,12 +5,13 @@ import { SubjectModel } from "./SubjectModel";
 import { UserModel } from "./UserModel";
 
 export class ExamModel extends BaseModel {
-    name: string;
-    subjectId: string;
+    exam_id: number;
+    exam_name: string;
+    subject_id: number;
     subject?: SubjectModel;
-    classId: string;
-    class: ClassModel;
-    createdBy: UserModel;
+    class_id: number;
+    classes: ClassModel;
+    created_by: UserModel | number;
     duration: number;
-    questions: QuestionModel[];
+    questions: QuestionModel[] | string[];
 }

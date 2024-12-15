@@ -6,8 +6,8 @@ import { DeleteExamDialog } from "./exam-delete";
 
 interface ExamListProps {
     exams: ExamModel[];
-    onSubmit: (data: ExamFormValues, existingExam?: ExamModel) => void;
-    onDelete: (examId: string) => void;
+    onSubmit: () => void;
+    onDelete: (examId: number) => void;
 }
 
 export const ExamList = (props: ExamListProps) => {
@@ -15,7 +15,7 @@ export const ExamList = (props: ExamListProps) => {
 
     const columns: ColumnDef<ExamModel>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "exam_name",
             header: "Exam Name",
         },
         {
@@ -30,7 +30,7 @@ export const ExamList = (props: ExamListProps) => {
             accessorKey: "class",
             header: "Class",
             cell: ({ row }) => {
-                const cls = row.original.class;
+                const cls = row.original.classes;
                 return <span>{cls?.class_name || 'N/A'}</span>;
             }
         },
@@ -64,7 +64,7 @@ export const ExamList = (props: ExamListProps) => {
                 const exam = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
-                        <ExamForm exam={exam} onSubmit={(data) => onSubmit(data, exam)}/>
+                        <ExamForm exam={exam} onSubmit={onSubmit}/>
                         <DeleteExamDialog exam={exam} onDelete={onDelete} />
                     </div>
                 )

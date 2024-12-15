@@ -1,69 +1,71 @@
 import { toast } from 'sonner';
-import { useState } from "react";
-import { QUESTION_LIST } from "@/constants";
+import { useState, useEffect } from "react";
+import { QuestionListApi } from "@/api/page";
 import { QuestionModel } from "@/models";
 import { QuestionList } from "./question-list";
-import { QuestionForm, QuestionFormValues } from "./question-form";
+import { LoadingSpinner } from "@/components";
+import { QuestionForm } from "./question-form";
 
 const QuestionAdmin = () => {
-    const [questions, setQuestions] = useState<QuestionModel[]>(QUESTION_LIST as any);
+    const [questions, setQuestions] = useState<QuestionModel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleSubmit = (data: QuestionFormValues, existingQuestion?: QuestionModel) => {
+    const fetchQuestions = async () => {
         try {
-            if (existingQuestion) {
-                setQuestions(currentQuestions => 
-                    currentQuestions.map(question => 
-                        question.id === existingQuestion.id 
-                        ? {
-                            ...question,
-                            ...data,
-                            updated_at: new Date().toISOString()
-                        } : question
-                    )
-                );
-
-                toast.success('Question Updated', {
-                    description: 'Question has been successfully updated.'
-                });
-            } else {
-                const newQuestion: QuestionModel = {
-                    id: `QUES${Date.now()}`,
-                    ...data,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    isDeleted: false,
-                } as any;
-
-                setQuestions(currentQuestions => [newQuestion, ...currentQuestions]);
-
-                toast.success('Question Created', {
-                    description: 'New question has been successfully added.'
-                });
+            const response = await QuestionListApi.getAllQuestions();
+            if (response.data) {
+                setQuestions(response.data.data);
             }
-        } catch (error) {
+        } catch (error: any) {
+            toast.error('Failed to fetch questions', {
+                description: error?.message || 'Unable to load questions. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchQuestions();
+    }, []);
+
+    const handleSubmit = async () => {
+        try {
+            await fetchQuestions();
+        } catch (error: any) {
             toast.error('Operation Failed', {
-                description: 'Unable to process question operation. Please try again.'
+                description: error?.message || 'Unable to process question operation.'
             });
         }
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: number) => {
         try {
-            const questionToDelete = questions.find(question => question.id === id);
+            const questionToDelete = questions.find(question => question.question_bank_id === id);
+
+            await QuestionListApi.deleteQuestion(id);
 
             setQuestions(currentQuestions => 
-                currentQuestions.filter(question => question.id !== id)
+                currentQuestions.filter(question => question.question_bank_id !== id)
             );
 
             toast.success('Question Deleted', {
-                description: 'Question has been successfully removed.',
+                description: `${questionToDelete?.question || 'Question'} has been removed.`,
             });
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Deletion Failed', {
-                description: 'Unable to delete question. Please try again.'
+                description: error?.message || 'Unable to delete question.'
             });
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
     return (
         <>

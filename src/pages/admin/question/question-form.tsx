@@ -1,57 +1,127 @@
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { QuestionModel } from "@/models";
+import { BankApi, QuestionListApi } from '@/api/page';
+import { BankModel, QuestionModel } from "@/models";
 import { useForm } from 'react-hook-form';
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { BANK_LIST } from '@/constants/fake-data';
 import { Pencil, Plus, Upload } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
+interface AnswerOption {
+    id: number;
+    value: string;
+}
+
 const questionFormSchema = z.object({
-    content: z.string().min(5, "Question content must be at least 5 characters long."),
-    answer: z.array(z.string()).min(2, "Must have at least 2 answers"),
-    correctAnswer: z.string().min(1, "Must select correct answer"),
-    bankId: z.string().min(1, "Bank is required"),
+    question: z.string().min(5, "Question content must be at least 5 characters long."),
+    question_bank_id: z.number().min(1, "Bank is required"),
+    correct_answer: z.string().min(1, "Must select correct answer"),
 });
 
 export type QuestionFormValues = z.infer<typeof questionFormSchema>;
 
 interface QuestionFormProps {
     question?: QuestionModel;
-    onSubmit: (data: QuestionFormValues) => void;
+    onSubmit: () => void;
     isHideImport?: boolean;
 }
 
 export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHideImport = false }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [answers, setAnswers] = useState<string[]>(question?.answer || ['', '', '', '']);
+    const [answers, setAnswers] = useState<AnswerOption[]>(
+        question?.answer
+            ? JSON.parse(question.answer).map((ans: string, idx: number) => ({
+                id: idx + 1,
+                value: ans
+            }))
+            : Array(4).fill('').map((_, idx) => ({
+                id: idx + 1,
+                value: ''
+            }))
+    );
+    const [banks, setBanks] = useState<BankModel[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const fetchBanks = async () => {
+        try {
+            setIsLoading(true);
+            const response = await BankApi.getAllBanks();
+            if (response.data) {
+                setBanks(response.data.data);
+            }
+        } catch (error: any) {
+            toast.error('Failed to load banks', {
+                description: error?.message || 'Please try again'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isDialogOpen) {
+            fetchBanks();
+        }
+    }, [isDialogOpen]);
 
     const form = useForm<QuestionFormValues>({
         resolver: zodResolver(questionFormSchema),
         defaultValues: question ? {
-            content: question.content,
-            answer: question.answer,
-            correctAnswer: question.correctAnswer,
-            bankId: question.bankId,
+            question: question.question,
+            question_bank_id: question.question_bank_id,
+            correct_answer: question.correct_answer,
         } : {
-            content: '',
-            answer: ['', '', '', ''],
-            correctAnswer: '',
-            bankId: '',
+            question: '',
+            question_bank_id: undefined,
+            correct_answer: '',
         }
     });
 
-    const handleSubmit = (data: QuestionFormValues) => {
-        onSubmit({
-            ...data,
-            answer: answers.filter(a => a.trim() !== '')
-        });
-        setIsDialogOpen(false);
+    const handleSubmit = async (data: QuestionFormValues) => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+
+        try {
+            const validAnswers = answers.filter(a => a.value.trim() !== '');
+            const answersJson = JSON.stringify(validAnswers.map(a => a.value));
+
+            const submitAction = question
+                ? QuestionListApi.updateQuestion({
+                    payload: {
+                        question_bank_id: question.question_bank_id,
+                        ...data,
+                        answer: answersJson
+                    }
+                })
+                : QuestionListApi.createQuestion({
+                    payload: {
+                        ...data,
+                        answer: answersJson
+                    }
+                });
+
+            const response = await submitAction;
+
+            if (!response.data.code) {
+                toast.success(question ? 'Question Updated' : 'Question Created', {
+                    description: `Question has been ${question ? 'updated' : 'created'} successfully.`
+                });
+                onSubmit();
+                setIsDialogOpen(false);
+            }
+        } catch (error: any) {
+            toast.error('Operation Failed', {
+                description: error?.message || 'Unable to process question operation.'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const [isUploading, setIsUploading] = useState(false);
@@ -113,7 +183,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                             <FormField
                                 control={form.control}
-                                name="content"
+                                name="question"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Question Content</FormLabel>
@@ -126,20 +196,23 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                             />
                             <FormField
                                 control={form.control}
-                                name="bankId"
+                                name="question_bank_id"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Bank</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={(v) => field.onChange(+v)} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select a bank" />
+                                                    <SelectValue placeholder={isLoading ? "Loading..." : "Select a bank"} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {BANK_LIST.map((bank) => (
-                                                    <SelectItem key={bank.id} value={bank.id}>
-                                                        {bank.name}
+                                                {banks.map((bank) => (
+                                                    <SelectItem
+                                                        key={bank.question_bank_id}
+                                                        value={bank.question_bank_id}
+                                                    >
+                                                        {bank.bank_name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -149,41 +222,80 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                 )}
                             />
                             <div className="space-y-4">
-                                <FormLabel>Answers</FormLabel>
-                                {answers.map((answer, index) => (
-                                    <Input
-                                        key={index}
-                                        value={answer}
-                                        onChange={(e) => {
-                                            const newAnswers = [...answers];
-                                            newAnswers[index] = e.target.value;
-                                            setAnswers(newAnswers);
-                                            form.setValue('answer', newAnswers);
+                                <div className="flex items-center justify-between">
+                                    <FormLabel>Answers</FormLabel>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            const newAnswer = {
+                                                id: answers.length + 1,
+                                                value: ''
+                                            };
+                                            setAnswers([...answers, newAnswer]);
                                         }}
-                                        placeholder={`Answer ${index + 1}`}
-                                    />
+                                    >
+                                        Add Answer
+                                    </Button>
+                                </div>
+                                {answers.map((answer, index) => (
+                                    <div key={answer.id} className="flex gap-2">
+                                        <Input
+                                            value={answer.value}
+                                            onChange={(e) => {
+                                                const newAnswers = [...answers];
+                                                newAnswers[index] = {
+                                                    ...newAnswers[index],
+                                                    value: e.target.value
+                                                };
+                                                setAnswers(newAnswers);
+                                            }}
+                                            placeholder={`Answer ${index + 1}`}
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="px-3"
+                                            onClick={() => {
+                                                const newAnswers = answers.filter((_, i) => i !== index);
+                                                setAnswers(newAnswers);
+                                            }}
+                                        >
+                                            ×
+                                        </Button>
+                                    </div>
                                 ))}
                             </div>
                             <FormField
                                 control={form.control}
-                                name="correctAnswer"
+                                name="correct_answer"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Correct Answer</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                            disabled={answers.length === 0}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select correct answer" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {answers.map((answer, index) => (
-                                                    answer.trim() && (
-                                                        <SelectItem key={index} value={answer}>
-                                                            {answer}
+                                                {answers
+                                                    .filter(answer => answer.value.trim() !== '')
+                                                    .map(answer => (
+                                                        <SelectItem
+                                                            key={answer.id}
+                                                            value={answer.value}
+                                                        >
+                                                            {answer.value}
                                                         </SelectItem>
-                                                    )
-                                                ))}
+                                                    ))
+                                                }
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -195,11 +307,15 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                     type="button"
                                     variant="outline"
                                     onClick={() => setIsDialogOpen(false)}
+                                    disabled={isSubmitting}
                                 >
                                     Cancel
                                 </Button>
-                                <Button type="submit">
-                                    {question ? 'Update Question' : 'Create Question'}
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting
+                                        ? 'Saving...'
+                                        : (question ? 'Update Question' : 'Create Question')
+                                    }
                                 </Button>
                             </div>
                         </form>

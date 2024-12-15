@@ -42,9 +42,9 @@ const ClassAdmin = () => {
     const handleDelete = async (id: number) => {
         try {
             const classToDelete = classes.find(cls => cls.class_id === id);
-            
+
             await ClassApi.deleteClass(id);
-            
+
             setClasses(currentClasses => 
                 currentClasses.filter(cls => cls.class_id !== id)
             );

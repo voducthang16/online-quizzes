@@ -30,4 +30,15 @@ export const API = {
         GET_ALL: 'subjects',
         GET_DETAIL: 'subjects/{0}',
     },
+    EXAM: {
+        CREATE: 'exams',
+        UPDATE: 'exams/{0}',
+        GET_ALL: 'exams',
+    },
+    QUESTION_LIST: {
+        GET_ALL: 'questions',
+        CREATE: 'questions',
+        DELETE: 'questions/{0}',
+        UPDATE: 'questions/{0}',
+    },
 }

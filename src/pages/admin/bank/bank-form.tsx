@@ -22,7 +22,7 @@ export type BankFormValues = z.infer<typeof bankFormSchema>;
 
 interface BankFormProps {
     bank?: BankModel;
-    onSubmit: (data: BankFormValues, existingBank?: BankModel) => void;
+    onSubmit: () => void;
 }
 
 export const BankForm: FC<BankFormProps> = ({ bank, onSubmit }) => {
@@ -57,7 +57,7 @@ export const BankForm: FC<BankFormProps> = ({ bank, onSubmit }) => {
                     description: `${data.bank_name} has been ${bank ? 'updated' : 'created'} successfully.`
                 });
 
-                onSubmit(response.data.data);
+                onSubmit();
                 setIsDialogOpen(false);
             }
         } catch (error: any) {

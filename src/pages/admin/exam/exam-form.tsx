@@ -1,50 +1,117 @@
 import { z } from 'zod';
-import { ExamModel } from "@/models";
+import { toast } from 'sonner';
+import { ExamApi, SubjectApi, ClassApi } from '@/api/page';
+import { ExamModel, SubjectModel, ClassModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FC, useState } from 'react';
-import { CLASS_LIST, SUBJECT_LIST, QUESTION_LIST } from '@/constants';
+import { FC, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useUserStore } from '@/stores';
 
 const examFormSchema = z.object({
-    name: z.string().min(2, "Exam name must be at least 2 characters long."),
-    subjectId: z.string().min(1, "Subject is required"),
-    classId: z.string().min(1, "Class is required"),
+    exam_name: z.string().min(3, { message: "Name must be at least 3 characters." }),
+    subject_id: z.number().min(1, "Subject is required"),
+    class_id: z.number().min(1, "Class is required"),
     duration: z.number().min(1, "Duration must be at least 1 minute"),
-    questions: z.array(z.string()).min(1, "At least one question is required"),
 });
 
 export type ExamFormValues = z.infer<typeof examFormSchema>;
 
 interface ExamFormProps {
     exam?: ExamModel;
-    onSubmit: (data: ExamFormValues) => void;
+    onSubmit: () => void;
 }
 
 export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [subjects, setSubjects] = useState<SubjectModel[]>([]);
+    const [classes, setClasses] = useState<ClassModel[]>([]);
+    const [isLoading, setIsLoading] = useState({
+        subjects: false,
+        classes: false
+    });
+
+    const { userInfo } = useUserStore();
+
+    const fetchData = async () => {
+        try {
+            setIsLoading({ subjects: true, classes: true });
+            
+            const [subjectsResponse, classesResponse] = await Promise.all([
+                SubjectApi.getAllSubjects(),
+                ClassApi.getAllClasses()
+            ]);
+
+            if (subjectsResponse.data) {
+                setSubjects(subjectsResponse.data.data);
+            }
+            if (classesResponse.data) {
+                setClasses(classesResponse.data.data);
+            }
+        } catch (error: any) {
+            toast.error('Failed to load data', {
+                description: error?.message || 'Please try again'
+            });
+        } finally {
+            setIsLoading({ subjects: false, classes: false });
+        }
+    };
+
+    useEffect(() => {
+        if (isDialogOpen) {
+            fetchData();
+        }
+    }, [isDialogOpen]);
 
     const form = useForm<ExamFormValues>({
         resolver: zodResolver(examFormSchema),
         defaultValues: exam ? {
-            name: exam.name,
-            subjectId: exam.subjectId,
-            classId: exam.classId,
+            exam_name: exam.exam_name,
+            subject_id: exam.subject_id,
+            class_id: exam.class_id,
             duration: exam.duration,
-            questions: exam.questions.map(q => q.id),
         } : {
-            name: '',
-            subjectId: '',
-            classId: '',
-            duration: 60,
-            questions: [],
+            exam_name: '',
+            subject_id: 0,
+            class_id: 0,
+            duration: 30,
         }
     });
+
+    const handleSubmit = async (data: ExamFormValues) => {
+        if (isSubmitting) return;
+
+        try {
+            setIsSubmitting(true);
+
+            const submitAction = exam 
+                ? ExamApi.updateExam({ payload: { exam_id: exam.exam_id, ...data } })
+                : ExamApi.createExam({ payload: { ...data, created_by: userInfo.user_id, questions: [] } });
+
+            const response = await submitAction;
+
+            if (!response.data.code) {
+                toast.success(exam ? 'Exam Updated' : 'Exam Created', {
+                    description: `${data.exam_name} has been ${exam ? 'updated' : 'created'} successfully.`
+                });
+
+                onSubmit();
+                setIsDialogOpen(false);
+            }
+        } catch (error: any) {
+            toast.error('Operation Failed', {
+                description: error?.message || 'Unable to process exam operation.'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -63,17 +130,17 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
                         {exam ? 'Edit Exam' : 'Create New Exam'}
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="exam_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Exam Name</FormLabel>
@@ -86,20 +153,20 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="subjectId"
+                            name="subject_id"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Subject</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select subject" />
+                                                <SelectValue placeholder={"Select a subject"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {SUBJECT_LIST.map((subject) => (
-                                                <SelectItem key={subject.id} value={subject.id}>
-                                                    {subject.name}
+                                            {subjects.map((subject) => (
+                                                <SelectItem key={subject.subject_id} value={subject.subject_id}>
+                                                    {subject.subject_name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -110,20 +177,20 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="classId"
+                            name="class_id"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Class</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select class" />
+                                                <SelectValue placeholder={"Select a class"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {CLASS_LIST.map((cls) => (
-                                                <SelectItem key={cls.id} value={cls.id}>
-                                                    {cls.name}
+                                            {classes.map((cls) => (
+                                                <SelectItem key={cls.class_id} value={cls.class_id}>
+                                                    {cls.class_name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -139,12 +206,7 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                                 <FormItem>
                                     <FormLabel>Duration (minutes)</FormLabel>
                                     <FormControl>
-                                        <Input 
-                                            type="number" 
-                                            min={1}
-                                            {...field}
-                                            onChange={e => field.onChange(parseInt(e.target.value))}
-                                        />
+                                        <Input type="number" min={1} {...field} onChange={e => field.onChange(+e.target.value)} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -155,11 +217,12 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                                 type="button" 
                                 variant="outline" 
                                 onClick={() => setIsDialogOpen(false)}
+                                disabled={isSubmitting}
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit">
-                                {exam ? 'Update Exam' : 'Create Exam'}
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? 'Saving...' : (exam ? 'Update Exam' : 'Create Exam')}
                             </Button>
                         </div>
                     </form>

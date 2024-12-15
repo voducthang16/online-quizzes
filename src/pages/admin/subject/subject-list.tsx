@@ -1,16 +1,15 @@
 import { SubjectModel } from "@/models";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
-import { SubjectForm, SubjectFormValues } from "./subject-form";
+import { SubjectForm } from "./subject-form";
 import { DeleteSubjectDialog } from "./subject-delete";
 import { formatDateByTimezone } from "@/utils";
 
 interface SubjectListProps {
     subjects: SubjectModel[];
-    onSubmit: (data: SubjectFormValues, existingSubject: SubjectModel) => void;
-    onDelete: (subjectId: string) => void;
+    onSubmit: () => void;
+    onDelete: (subjectId: number) => void;
 }
-
 
 export const SubjectList = (props: SubjectListProps) => {
     const { subjects, onSubmit, onDelete } = props;
@@ -45,7 +44,7 @@ export const SubjectList = (props: SubjectListProps) => {
                 const subject = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
-                        <SubjectForm subject={subject} onSubmit={(data) => onSubmit(data, subject)}/>
+                        <SubjectForm subject={subject} onSubmit={onSubmit}/>
                         <DeleteSubjectDialog subject={subject} onDelete={onDelete} />
                     </div>
                 )

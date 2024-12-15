@@ -1,75 +1,76 @@
 import { toast } from 'sonner';
-import { useState } from "react";
-import { EXAM_LIST } from "@/constants";
+import { useState, useEffect } from "react";
+import { ExamApi } from "@/api/page";
 import { ExamModel } from "@/models";
 import { ExamList } from "./exam-list";
-import { ExamForm, ExamFormValues } from "./exam-form";
+import { ExamForm } from "./exam-form";
+import { LoadingSpinner } from "@/components";
 
 const ExamAdmin = () => {
-    const [exams, setExams] = useState<ExamModel[]>(EXAM_LIST as any);
+    const [exams, setExams] = useState<ExamModel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleSubmit = (data: ExamFormValues, existingExam?: ExamModel) => {
+    const fetchExams = async () => {
         try {
-            if (existingExam) {
-                // setExams(currentExams => 
-                //     currentExams.map(exam => 
-                //         exam.id === existingExam.id 
-                //         ? {
-                //             ...exam,
-                //             ...data,
-                //             updated_at: new Date().toISOString()
-                //         } : exam
-                //     )
-                // );
-
-                toast.success('Exam Updated', {
-                    description: `${data.name} has been successfully updated.`
-                });
-            } else {
-                const newExam: ExamModel = {
-                    id: `EXAM${Date.now()}`,
-                    ...data,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    isDeleted: false,
-                } as any;
-
-                setExams(currentExams => [newExam, ...currentExams]);
-
-                toast.success('Exam Created', {
-                    description: `${data.name} has been successfully added.`
-                });
+            const response = await ExamApi.getAllExams({});
+            if (response.data) {
+                setExams(response.data.data);
             }
-        } catch (error) {
+        } catch (error: any) {
+            toast.error('Failed to fetch exams', {
+                description: error?.message || 'Unable to load exams. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchExams();
+    }, []);
+
+    const handleSubmit = async () => {
+        try {
+            await fetchExams(); // Refresh list after changes
+        } catch (error: any) {
             toast.error('Operation Failed', {
-                description: 'Unable to process exam operation. Please try again.'
+                description: error?.message || 'Unable to process exam operation.'
             });
         }
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: number) => {
         try {
-            const examToDelete = exams.find(exam => exam.id === id);
-
+            const examToDelete = exams.find(exam => exam.exam_id === id);
+            
+            // TODO: Add delete exam API endpoint
             setExams(currentExams => 
-                currentExams.filter(exam => exam.id !== id)
+                currentExams.filter(exam => exam.exam_id !== id)
             );
 
             toast.success('Exam Deleted', {
-                description: `${examToDelete?.name || 'Exam'} has been removed.`,
+                description: `${examToDelete?.exam_name || 'Exam'} has been removed.`,
             });
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Deletion Failed', {
-                description: 'Unable to delete exam. Please try again.'
+                description: error?.message || 'Unable to delete exam.'
             });
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
     return (
         <>
             <div className="mb-4 flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Exam Management</h1>
-                    <ExamForm onSubmit={handleSubmit}/>
+                <ExamForm onSubmit={handleSubmit}/>
             </div>
             <ExamList 
                 exams={exams} 

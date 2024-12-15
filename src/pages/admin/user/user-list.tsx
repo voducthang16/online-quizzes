@@ -7,8 +7,8 @@ import { formatDateByTimezone } from "@/utils";
 
 interface UserListProps {
     users: UserModel[];
-    onSubmit: (data: UserFormValues, existingUser: UserModel) => void;
-    onDelete: (userId: string) => void;
+    onSubmit: () => void;
+    onDelete: (userId: number) => void;
 }
 
 
@@ -52,7 +52,7 @@ export const UserList = (props: UserListProps) => {
                 const user = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
-                        <UserForm user={user} onSubmit={(data) => onSubmit(data, user)}/>
+                        <UserForm user={user} onSubmit={onSubmit}/>
                         <DeleteUserDialog user={user} onDelete={onDelete} />
                     </div>
                 )

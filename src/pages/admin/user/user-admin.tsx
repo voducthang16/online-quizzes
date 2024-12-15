@@ -39,13 +39,13 @@ const UserAdmin = () => {
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: number) => {
         try {
-            const userToDelete = users.find(user => user.id === id);
+            const userToDelete = users.find(user => user.user_id === id);
             
             // TODO: Add delete user API endpoint
             setUsers(currentUsers => 
-                currentUsers.filter(user => user.id !== id)
+                currentUsers.filter(user => user.user_id !== id)
             );
 
             toast.success('User Deleted', {

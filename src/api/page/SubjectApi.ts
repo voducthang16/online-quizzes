@@ -29,7 +29,7 @@ export const SubjectApi = {
         });
     },
 
-    deleteSubject(id: string) {
+    deleteSubject(id: number) {
         return BaseService.delete<void>({
             url: API.SUBJECT.DELETE.format(id),
         });

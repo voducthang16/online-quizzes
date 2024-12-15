@@ -6,7 +6,7 @@ import { ConfirmDialog, ConfirmDialogType } from '@/components';
 
 interface DeleteUserDialogProps {
     user: UserModel;
-    onDelete: (userId: string) => void;
+    onDelete: (userId: number) => void;
 }
 
 export const DeleteUserDialog: FC<DeleteUserDialogProps> = ({ 
@@ -16,7 +16,7 @@ export const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDelete = () => {
-        onDelete(user.id);
+        onDelete(user.user_id);
         setIsOpen(false);
     };
 

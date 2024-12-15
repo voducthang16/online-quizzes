@@ -6,7 +6,7 @@ import { DeleteClassDialog } from "./class-delete";
 
 interface ClassListProps {
     classes: ClassModel[];
-    onSubmit: (data: ClassFormValues, existingClass?: ClassModel) => void;
+    onSubmit: () => void;
     onDelete: (classId: number) => void;
 }
 
@@ -49,7 +49,7 @@ export const ClassList = (props: ClassListProps) => {
                 const classData = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
-                        <ClassForm class={classData} onSubmit={(data) => onSubmit(data, classData)}/>
+                        <ClassForm class={classData} onSubmit={onSubmit}/>
                         <DeleteClassDialog class={classData} onDelete={onDelete} />
                     </div>
                 )
