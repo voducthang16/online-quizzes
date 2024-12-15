@@ -1,71 +1,85 @@
 import { toast } from 'sonner';
-import { useState } from "react";
-import { ROLE, USER_LIST } from "@/constants";
+import { UserApi } from "@/api/page";
 import { UserModel } from "@/models";
 import { UserList } from "./user-list";
+import { useEffect, useState } from "react";
+import { LoadingSpinner } from "@/components";
 import { UserForm, UserFormValues } from "./user-form";
 
 const UserAdmin = () => {
-    const [users, setUsers] = useState<UserModel[]>(USER_LIST as any);
+    const [users, setUsers] = useState<UserModel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleSubmit = (data: UserFormValues, existingUser?: UserModel) => {
+    const fetchUsers = async () => {
+        try {
+            const response = await UserApi.getAllUsers();
+            if (response.data) {
+                setUsers(response.data.data);
+            }
+        } catch (error: any) {
+            toast.error('Failed to fetch users', {
+                description: error?.message || 'Unable to load users. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const handleSubmit = (newUserData: UserFormValues, existingUser?: UserModel) => {
         try {
             if (existingUser) {
                 setUsers(currentUsers => 
                     currentUsers.map(user => 
-                        user.id === existingUser.id 
+                        user.user_id === existingUser.user_id 
                         ? {
                             ...user,
-                            ...data,
-                            fullName: data.fullName,
-                            updatedAt: new Date().toISOString()
+                            ...newUserData,
                         } : user
                     )
                 );
-
-                toast.success('User Updated', {
-                    description: `${data.fullName} has been successfully updated.`
-                });
             } else {
-                const newUser: UserModel = {
-                    id: new Date().getTime().toString(),
-                    email: data.email,
-                    role: data.role,
-                    fullName: data.fullName,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    isDeleted: false,
-                };
+                const newUser = {
+                    ...newUserData,
+                } as UserModel;
 
                 setUsers(currentUsers => [newUser, ...currentUsers]);
-
-                toast.success('User Created', {
-                    description: `${data.fullName} has been successfully added.`
-                });
             }
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Operation Failed', {
-                description: 'Unable to process user operation. Please try again.'
+                description: error?.message || 'Unable to process user operation. Please try again.'
             });
         }
-    }
+    };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         try {
             const userToDelete = users.find(user => user.id === id);
-
+            
+            // TODO: Add delete user API endpoint
             setUsers(currentUsers => 
                 currentUsers.filter(user => user.id !== id)
             );
 
             toast.success('User Deleted', {
-                description: `${userToDelete?.fullName || 'User'} has been removed.`,
+                description: `${userToDelete?.full_name || 'User'} has been removed.`,
             });
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Deletion Failed', {
-                description: 'Unable to delete user. Please try again.'
+                description: error?.message || 'Unable to delete user. Please try again.'
             });
         }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoadingSpinner />
+            </div>
+        );
     }
 
     return (
@@ -76,7 +90,7 @@ const UserAdmin = () => {
             </div>
             <UserList users={users} onSubmit={handleSubmit} onDelete={handleDelete}/>
         </>
-    )
-}
+    );
+};
 
 export default UserAdmin;

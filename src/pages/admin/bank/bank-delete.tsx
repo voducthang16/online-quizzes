@@ -39,7 +39,7 @@ export const DeleteBankDialog: FC<DeleteBankDialogProps> = ({
                     <div className="my-2 p-2 bg-muted rounded">
                         <div><strong>Name:</strong> {bank.name}</div>
                         <div><strong>Status:</strong> {bank.isPublic ? 'Public' : 'Private'}</div>
-                        <div><strong>Created By:</strong> {bank.createdBy?.fullName}</div>
+                        <div><strong>Created By:</strong> {bank.createdBy?.full_name}</div>
                     </div>
                     This action cannot be undone.
                 </>}

@@ -137,7 +137,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                                         <SelectContent>
                                             {teachers.map((teacher) => (
                                                 <SelectItem key={teacher.id} value={teacher.id}>
-                                                    {teacher.fullName}
+                                                    {teacher.full_name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

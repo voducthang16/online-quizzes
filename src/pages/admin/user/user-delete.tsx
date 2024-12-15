@@ -37,7 +37,7 @@ export const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
                 description={<>
                     Are you sure you want to delete the class:
                     <div className="my-2 p-2 bg-muted rounded">
-                        <div><strong>Name:</strong> {user.fullName}</div>
+                        <div><strong>Name:</strong> {user.full_name}</div>
                         <div><strong>Email:</strong> {user.email}</div>
                         <div><strong>Role:</strong> {user.role}</div>
                     </div>

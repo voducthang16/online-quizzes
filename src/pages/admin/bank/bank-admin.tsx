@@ -12,14 +12,14 @@ const generateFakeBanks = (count: number) => {
         createdBy: {
             id: `USER${i + 1}`,
             email: `teacher${i + 1}@example.com`,
-            fullName: `Teacher ${i + 1}`,
+            full_name: `Teacher ${i + 1}`,
             role: 'Teacher',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
             isDeleted: false
         },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         isDeleted: false,
     }));
 };
@@ -36,7 +36,7 @@ const BankAdmin = () => {
                         ? {
                             ...bank,
                             ...data,
-                            updatedAt: new Date().toISOString()
+                            updated_at: new Date().toISOString()
                         } : bank
                     )
                 );
@@ -49,8 +49,8 @@ const BankAdmin = () => {
                     id: new Date().getTime().toString(),
                     name: data.name,
                     isPublic: data.isPublic,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
                     isDeleted: false,
                 };
 

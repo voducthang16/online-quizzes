@@ -17,7 +17,7 @@ const ExamAdmin = () => {
                 //         ? {
                 //             ...exam,
                 //             ...data,
-                //             updatedAt: new Date().toISOString()
+                //             updated_at: new Date().toISOString()
                 //         } : exam
                 //     )
                 // );
@@ -29,8 +29,8 @@ const ExamAdmin = () => {
                 const newExam: ExamModel = {
                     id: `EXAM${Date.now()}`,
                     ...data,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
                     isDeleted: false,
                 } as any;
 

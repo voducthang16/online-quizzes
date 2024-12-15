@@ -31,7 +31,7 @@ export const ClassList = (props: ClassListProps) => {
             header: "Teacher",
             cell: ({ row }) => {
                 const teacher = row.original.teacher;
-                return <span>{teacher?.fullName || 'N/A'}</span>;
+                return <span>{teacher?.full_name || 'N/A'}</span>;
             }
         },
         {
@@ -43,18 +43,18 @@ export const ClassList = (props: ClassListProps) => {
             }
         },
         {
-            accessorKey: "createdAt",
+            accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("createdAt"))
+                const date = new Date(row.getValue("created_at"))
                 return <span>{date.toLocaleDateString()}</span>
             },
         },
         {
-            accessorKey: "updatedAt",
+            accessorKey: "updated_at",
             header: "Updated At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updatedAt"))
+                const date = new Date(row.getValue("updated_at"))
                 return <span>{date.toLocaleDateString()}</span>
             },
         },

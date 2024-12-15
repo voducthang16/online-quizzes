@@ -39,10 +39,10 @@ export const QuestionList = (props: QuestionListProps) => {
             }
         },
         {
-            accessorKey: "createdAt",
+            accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("createdAt"))
+                const date = new Date(row.getValue("created_at"))
                 return <span>{date.toLocaleDateString()}</span>
             },
         },

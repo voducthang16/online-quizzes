@@ -1,70 +1,56 @@
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { ROLE } from '@/constants';
+import { UserApi } from '@/api/page';
 import { useUserStore } from '@/stores';
-import { useNavigate } from 'react-router';
 import { Lock, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-const FAKE_USERS = [
-    {
-        email: 'admin@example.com',
-        password: 'admin123',
-        fullName: 'Admin User',
-        role: ROLE.ADMIN,
-    },
-    {
-        email: 'teacher@example.com',
-        password: 'teacher123',
-        fullName: 'Teacher User',
-        role: ROLE.TEACHER,
-    },
-    {
-        email: 'student@example.com',
-        password: 'student123',
-        fullName: 'Student User',
-        role: ROLE.STUDENT,
-    }
-];
-
 export const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { setUserInfo } = useUserStore();
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
 
-        const foundUser = FAKE_USERS.find(
-            user => user.email === email && user.password === password
-        );
-
-        if (foundUser) {
-            setUserInfo({
-                fullName: foundUser.fullName,
-                email: foundUser.email,
-                role: foundUser.role,
+        try {
+            const response = await UserApi.login({
+                payload: {
+                    email,
+                    password,
+                },
             });
 
-            toast.success('Login Successful', {
-                description: `Welcome, ${foundUser.fullName}!`
-            });
+            const data = response.data.data;
+            const error = response.data.code;
 
-            navigate('/', { replace: true });
-        } else {
+            if (!error) {
+                setUserInfo({
+                    full_name: data.full_name,
+                    email: data.email,
+                    role: data.role,
+                });
+
+                toast.success('Login Successful', {
+                    description: `Welcome, ${data.full_name}!`
+                });
+
+                navigate('/', { replace: true });
+            }
+        } catch (error: any) {
             toast.error('Login Failed', {
-                description: 'Invalid email or password'
+                description: error?.message || 'Invalid email or password'
             });
+        } finally {
+            setIsLoading(false);
         }
-    };
-
-    const copyToClipboard = (text: string, type: 'email' | 'password') => {
-        navigator.clipboard.writeText(text);
-        toast.success(`${type} copied to clipboard!`);
     };
 
     return (
@@ -86,6 +72,7 @@ export const LoginForm = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                     </div>
@@ -101,33 +88,14 @@ export const LoginForm = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                     </div>
-                    <div className="text-center text-sm text-gray-600">
-                        <p>Test Credentials:</p>
-                        {FAKE_USERS.map((user) => (
-                            <div key={user.email} className="space-x-2">
-                                <span 
-                                    className="cursor-pointer hover:text-blue-500"
-                                    onClick={() => copyToClipboard(user.email, 'email')}
-                                >
-                                    {user.email}
-                                </span>
-                                <span>/</span>
-                                <span 
-                                    className="cursor-pointer hover:text-blue-500"
-                                    onClick={() => copyToClipboard(user.password, 'password')}
-                                >
-                                    {user.password}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit" className="w-full">
-                        Login
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading ? 'Logging in...' : 'Login'}
                     </Button>
                 </CardFooter>
             </form>

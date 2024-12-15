@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { toast } from 'sonner';
 import { ROLE } from "@/constants";
+import { UserApi } from '@/api/page';
 import { UserModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
@@ -14,7 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 const userFormSchema = z.object({
     email: z.string().email({ message: "Invalid email address." }),
     role: z.nativeEnum(ROLE),
-    fullName: z.string().min(2, "Full name must be at least 2 characters long."),
+    full_name: z.string().min(2, "Full name must be at least 2 characters long."),
+    password: z.string().optional(),
 });
 
 export type UserFormValues = z.infer<typeof userFormSchema>;
@@ -26,17 +29,18 @@ interface UserFormProps {
 
 export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<UserFormValues>({
         resolver: zodResolver(userFormSchema),
         defaultValues: user ? {
             email: user.email,
             role: user.role,
-            fullName: user.fullName || '',
+            full_name: user.full_name || '',
         } : {
             email: '',
             role: ROLE.STUDENT,
-            fullName: '',
+            full_name: '',
         }
     });
 
@@ -45,18 +49,48 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
             form.reset(user ? {
                 email: user.email,
                 role: user.role,
-                fullName: user.fullName || '',
+                full_name: user.full_name || '',
             } : {
                 email: '',
                 role: ROLE.STUDENT,
-                fullName: '',
+                full_name: '',
             });
         }
     }, [isDialogOpen, form, user]);
 
-    const handleSubmit = (data: UserFormValues) => {
-        onSubmit(data);
-        onClose();
+    const handleSubmit = async (data: UserFormValues) => {
+
+        if (isSubmitting) return;
+
+        try {
+            setIsSubmitting(true);
+
+            const submitAction = user 
+                ? UserApi.updateUser({ payload: { user_id: user.user_id, ...data } })
+                : UserApi.createUser({ 
+                    payload: { 
+                        ...data, 
+                        password: user ? undefined : '123456' 
+                    } 
+                });
+
+            const response = await submitAction;
+
+            if (!response.data.code) {
+                toast.success(user ? 'User Updated' : 'User Created', {
+                    description: `${data.full_name} has been ${user ? 'updated' : 'created'} successfully.`
+                });
+
+                onSubmit(response.data.data);
+                onClose();
+            }
+        } catch (error: any) {
+            toast.error('Operation Failed', {
+                description: error?.message || 'Unable to process user operation.'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const onClose = () => {
@@ -118,11 +152,14 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {Object.values(ROLE).map((role) => (
-                                                <SelectItem key={role} value={role}>
-                                                    {role}
-                                                </SelectItem>
-                                            ))}
+                                            {Object.values(ROLE).map((role) => {
+                                                if (role === ROLE.ADMIN) return null;
+                                                return (
+                                                    <SelectItem key={role} value={role}>
+                                                        <span className="capitalize">{role}</span>
+                                                    </SelectItem>
+                                                );
+                                            })}
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -131,7 +168,7 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="fullName"
+                            name="full_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Full Name</FormLabel>
@@ -150,8 +187,8 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit">
-                                {user ? 'Update User' : 'Create User'}
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? 'Saving...' : (user ? 'Update' : 'Create')}
                             </Button>
                         </div>
                     </form>

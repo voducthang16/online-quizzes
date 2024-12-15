@@ -17,7 +17,7 @@ const SubjectAdmin = () => {
                         ? {
                             ...subject,
                             ...data,
-                            updatedAt: new Date().toISOString()
+                            updated_at: new Date().toISOString()
                         } : subject
                     )
                 );
@@ -30,8 +30,8 @@ const SubjectAdmin = () => {
                     id: new Date().getTime().toString(),
                     name: data.name,
                     description: data.description,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
                     isDeleted: false,
                 };
 

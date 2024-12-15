@@ -3,90 +3,90 @@ export const USER_LIST = [
         "id": "USER1",
         "email": "teacher1@example.com",
         "role": "Teacher",
-        "fullName": "Teacher FullName 1",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Teacher FullName 1",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER2",
         "email": "student2@example.com",
         "role": "Student",
-        "fullName": "Student FullName 2",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 2",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER3",
         "email": "teacher3@example.com",
         "role": "Teacher",
-        "fullName": "Teacher FullName 3",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Teacher FullName 3",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER4",
         "email": "student4@example.com",
         "role": "Student",
-        "fullName": "Student FullName 4",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 4",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER5",
         "email": "teacher5@example.com",
         "role": "Teacher",
-        "fullName": "Teacher FullName 5",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Teacher FullName 5",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER6",
         "email": "student6@example.com",
         "role": "Student",
-        "fullName": "Student FullName 6",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 6",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER7",
         "email": "student7@example.com",
         "role": "Student",
-        "fullName": "Student FullName 7",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 7",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER8",
         "email": "student8@example.com",
         "role": "Student",
-        "fullName": "Student FullName 8",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 8",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER9",
         "email": "student9@example.com",
         "role": "Student",
-        "fullName": "Student FullName 9",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 9",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER10",
         "email": "student10@example.com",
         "role": "Student",
-        "fullName": "Student FullName 10",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 10",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     }
     ,
@@ -94,99 +94,99 @@ export const USER_LIST = [
         "id": "USER11",
         "email": "student11@example.com",
         "role": "Student",
-        "fullName": "Student FullName 11",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 11",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER12",
         "email": "student12@example.com",
         "role": "Student",
-        "fullName": "Student FullName 12",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 12",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER13",
         "email": "student13@example.com",
         "role": "Student",
-        "fullName": "Student FullName 13",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 13",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER13",
         "email": "student13@example.com",
         "role": "Student",
-        "fullName": "Student FullName 13",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 13",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER14",
         "email": "student14@example.com",
         "role": "Student",
-        "fullName": "Student FullName 14",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 14",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER15",
         "email": "student15@example.com",
         "role": "Student",
-        "fullName": "Student FullName 15",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 15",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER16",
         "email": "student16@example.com",
         "role": "Student",
-        "fullName": "Student FullName 16",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 16",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER17",
         "email": "student17@example.com",
         "role": "Student",
-        "fullName": "Student FullName 17",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 17",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER18",
         "email": "student18@example.com",
         "role": "Student",
-        "fullName": "Student FullName 18",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 18",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER19",
         "email": "student19@example.com",
         "role": "Student",
-        "fullName": "Student FullName 19",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 19",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
         "id": "USER20",
         "email": "student20@example.com",
         "role": "Student",
-        "fullName": "Student FullName 20",
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "full_name": "Student FullName 20",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     }
 ];
@@ -224,14 +224,14 @@ export const CLASS_LIST = [
             "id": "USER1",
             "email": "teacher1@example.com",
             "role": "Teacher",
-            "fullName": "Teacher FullName 1",
-            "createdAt": "2024-12-10T12:19:04.306Z",
-            "updatedAt": "2024-12-10T12:19:04.306Z",
+            "full_name": "Teacher FullName 1",
+            "created_at": "2024-12-10T12:19:04.306Z",
+            "updated_at": "2024-12-10T12:19:04.306Z",
             "isDeleted": false
         },
         "students": ["USER2", "USER4", "USER6", "USER7", "USER8"],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "CLASS2",
@@ -247,14 +247,14 @@ export const CLASS_LIST = [
             "id": "USER3",
             "email": "teacher3@example.com",
             "role": "Teacher",
-            "fullName": "Teacher FullName 3",
-            "createdAt": "2024-12-10T12:19:04.306Z",
-            "updatedAt": "2024-12-10T12:19:04.306Z",
+            "full_name": "Teacher FullName 3",
+            "created_at": "2024-12-10T12:19:04.306Z",
+            "updated_at": "2024-12-10T12:19:04.306Z",
             "isDeleted": false
         },
         "students": ["USER9", "USER10", "USER11", "USER12", "USER13"],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "CLASS3",
@@ -270,14 +270,14 @@ export const CLASS_LIST = [
             "id": "USER5",
             "email": "teacher5@example.com",
             "role": "Teacher",
-            "fullName": "Teacher FullName 5",
-            "createdAt": "2024-12-10T12:19:04.306Z",
-            "updatedAt": "2024-12-10T12:19:04.306Z",
+            "full_name": "Teacher FullName 5",
+            "created_at": "2024-12-10T12:19:04.306Z",
+            "updated_at": "2024-12-10T12:19:04.306Z",
             "isDeleted": false
         },
         "students": ["USER14", "USER15", "USER16", "USER17", "USER18"],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     }
 ];
 
@@ -290,13 +290,13 @@ export const BANK_LIST = [
             "id": "USER1",
             "email": "teacher1@example.com",
             "role": "Teacher",
-            "fullName": "Teacher FullName 1",
-            "createdAt": "2024-12-10T12:19:04.306Z",
-            "updatedAt": "2024-12-10T12:19:04.306Z",
+            "full_name": "Teacher FullName 1",
+            "created_at": "2024-12-10T12:19:04.306Z",
+            "updated_at": "2024-12-10T12:19:04.306Z",
             "isDeleted": false
         },
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "BANK2",
@@ -306,13 +306,13 @@ export const BANK_LIST = [
             "id": "USER3",
             "email": "teacher3@example.com",
             "role": "Teacher",
-            "fullName": "Teacher FullName 3",
-            "createdAt": "2024-12-10T12:19:04.306Z",
-            "updatedAt": "2024-12-10T12:19:04.306Z",
+            "full_name": "Teacher FullName 3",
+            "created_at": "2024-12-10T12:19:04.306Z",
+            "updated_at": "2024-12-10T12:19:04.306Z",
             "isDeleted": false
         },
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "BANK3",
@@ -322,13 +322,13 @@ export const BANK_LIST = [
             "id": "USER5",
             "email": "teacher5@example.com",
             "role": "Teacher",
-            "fullName": "Teacher FullName 5",
-            "createdAt": "2024-12-10T12:19:04.306Z",
-            "updatedAt": "2024-12-10T12:19:04.306Z",
+            "full_name": "Teacher FullName 5",
+            "created_at": "2024-12-10T12:19:04.306Z",
+            "updated_at": "2024-12-10T12:19:04.306Z",
             "isDeleted": false
         },
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     }
 ];
 
@@ -340,8 +340,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Hanoi",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES2",
@@ -350,8 +350,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Constitution",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES3",
@@ -360,8 +360,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Actions completed in the present",
         "bankId": "BANK2",
         "bank": BANK_LIST[1],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES4",
@@ -370,8 +370,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Converting waste into reusable material",
         "bankId": "BANK3",
         "bank": BANK_LIST[2],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES5",
@@ -380,8 +380,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Legislative",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES6",
@@ -390,8 +390,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "go",
         "bankId": "BANK2",
         "bank": BANK_LIST[1],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES7",
@@ -400,8 +400,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Vehicle emissions",
         "bankId": "BANK3",
         "bank": BANK_LIST[2],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES8",
@@ -410,8 +410,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "A fundamental law document",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES9",
@@ -420,8 +420,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Present Perfect",
         "bankId": "BANK2",
         "bank": BANK_LIST[1],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES10",
@@ -430,8 +430,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Balance of economic, environmental and social factors",
         "bankId": "BANK3",
         "bank": BANK_LIST[2],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES11",
@@ -440,8 +440,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Basic rights and freedoms",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES12",
@@ -450,8 +450,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "/tʌf/",
         "bankId": "BANK2",
         "bank": BANK_LIST[1],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES13",
@@ -460,8 +460,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Saving and protecting water",
         "bankId": "BANK3",
         "bank": BANK_LIST[2],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES14",
@@ -470,8 +470,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Law governing civil matters",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES15",
@@ -480,8 +480,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Huge",
         "bankId": "BANK2",
         "bank": BANK_LIST[1],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES16",
@@ -490,8 +490,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Greenhouse gases",
         "bankId": "BANK3",
         "bank": BANK_LIST[2],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES17",
@@ -500,8 +500,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Rule by people",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES18",
@@ -510,8 +510,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "will stay",
         "bankId": "BANK2",
         "bank": BANK_LIST[1],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES19",
@@ -520,8 +520,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Solar power",
         "bankId": "BANK3",
         "bank": BANK_LIST[2],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     },
     {
         "id": "QUES20",
@@ -530,8 +530,8 @@ export const QUESTION_LIST = [
         "correctAnswer": "Creations of the mind",
         "bankId": "BANK1",
         "bank": BANK_LIST[0],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z"
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z"
     }
 ];
 
@@ -552,8 +552,8 @@ export const EXAM_LIST = [
             QUESTION_LIST[7],  // Constitution
             QUESTION_LIST[13], // Civil law
         ],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
@@ -572,8 +572,8 @@ export const EXAM_LIST = [
             QUESTION_LIST[11], // Pronunciation
             QUESTION_LIST[14], // Very big
         ],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
@@ -592,8 +592,8 @@ export const EXAM_LIST = [
             QUESTION_LIST[12], // Water conservation
             QUESTION_LIST[15], // Global warming
         ],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     },
     {
@@ -612,8 +612,8 @@ export const EXAM_LIST = [
             QUESTION_LIST[18], // Renewable energy
             QUESTION_LIST[19], // Intellectual property
         ],
-        "createdAt": "2024-12-10T12:19:04.306Z",
-        "updatedAt": "2024-12-10T12:19:04.306Z",
+        "created_at": "2024-12-10T12:19:04.306Z",
+        "updated_at": "2024-12-10T12:19:04.306Z",
         "isDeleted": false
     }
 ];

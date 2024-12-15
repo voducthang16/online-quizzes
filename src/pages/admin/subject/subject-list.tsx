@@ -24,18 +24,18 @@ export const SubjectList = (props: SubjectListProps) => {
             header: "Description",
         },
         {
-            accessorKey: "createdAt",
+            accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("createdAt"))
+                const date = new Date(row.getValue("created_at"))
                 return <span>{date.toLocaleDateString()}</span>
             },
         },
         {
-            accessorKey: "updatedAt",
+            accessorKey: "updated_at",
             header: "Updated At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updatedAt"))
+                const date = new Date(row.getValue("updated_at"))
                 return <span>{date.toLocaleDateString()}</span>
             },
         },

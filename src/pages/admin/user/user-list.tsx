@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
 import { UserForm, UserFormValues } from "./user-form";
 import { DeleteUserDialog } from "./user-delete";
+import { formatDateByTimezone } from "@/utils";
 
 interface UserListProps {
     users: UserModel[];
@@ -16,7 +17,7 @@ export const UserList = (props: UserListProps) => {
 
     const columns: ColumnDef<UserModel>[] = [
         {
-            accessorKey: "fullName",
+            accessorKey: "full_name",
             header: "Full Name",
         },
         {
@@ -26,21 +27,22 @@ export const UserList = (props: UserListProps) => {
         {
             accessorKey: "role",
             header: "Role",
-        },
-        {
-            accessorKey: "createdAt",
-            header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("createdAt"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span className="capitalize">{row.getValue("role")}</span>
             },
         },
         {
-            accessorKey: "updatedAt",
+            accessorKey: "created_at",
+            header: "Created At",
+            cell: ({ row }) => {
+                return <span>{formatDateByTimezone(row.getValue("created_at"))}</span>
+            },
+        },
+        {
+            accessorKey: "updated_at",
             header: "Updated At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updatedAt"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("updated_at"))}</span>
             },
         },
         {

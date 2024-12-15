@@ -31,22 +31,22 @@ export const BankList = (props: BankListProps) => {
             header: "Created By",
             cell: ({ row }) => {
                 const createdBy = row.original.createdBy;
-                return <span>{createdBy?.fullName || 'N/A'}</span>;
+                return <span>{createdBy?.full_name || 'N/A'}</span>;
             }
         },
         {
-            accessorKey: "createdAt",
+            accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("createdAt"))
+                const date = new Date(row.getValue("created_at"))
                 return <span>{date.toLocaleDateString()}</span>
             },
         },
         {
-            accessorKey: "updatedAt",
+            accessorKey: "updated_at",
             header: "Updated At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updatedAt"))
+                const date = new Date(row.getValue("updated_at"))
                 return <span>{date.toLocaleDateString()}</span>
             },
         },
