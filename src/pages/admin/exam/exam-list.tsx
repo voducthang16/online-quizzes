@@ -23,7 +23,7 @@ export const ExamList = (props: ExamListProps) => {
             header: "Subject",
             cell: ({ row }) => {
                 const subject = row.original.subject;
-                return <span>{subject?.name || 'N/A'}</span>;
+                return <span>{subject?.subject_name || 'N/A'}</span>;
             }
         },
         {
@@ -31,7 +31,7 @@ export const ExamList = (props: ExamListProps) => {
             header: "Class",
             cell: ({ row }) => {
                 const cls = row.original.class;
-                return <span>{cls?.name || 'N/A'}</span>;
+                return <span>{cls?.class_name || 'N/A'}</span>;
             }
         },
         {

@@ -6,7 +6,7 @@ import { ConfirmDialog, ConfirmDialogType } from "@/components";
 
 interface DeleteClassDialogProps {
     class: ClassModel;
-    onDelete: (classId: string) => void;
+    onDelete: (classId: number) => void;
 }
 
 export const DeleteClassDialog: FC<DeleteClassDialogProps> = (props) => {
@@ -15,7 +15,7 @@ export const DeleteClassDialog: FC<DeleteClassDialogProps> = (props) => {
 
     const handleConfirm = () => {
         setIsOpen(false);
-        onDelete(classData.id);
+        onDelete(classData.class_id);
     };
 
     return (
@@ -35,9 +35,9 @@ export const DeleteClassDialog: FC<DeleteClassDialogProps> = (props) => {
                 description={<>
                     Are you sure you want to delete the class:
                     <div className="my-2 p-2 bg-muted rounded">
-                        <div><strong>Name:</strong> {classData.name}</div>
-                        <div><strong>Subject ID:</strong> {classData.subjectId}</div>
-                        <div><strong>Teacher ID:</strong> {classData.teacherId}</div>
+                        <div><strong>Name:</strong> {classData.class_name}</div>
+                        <div><strong>Subject ID:</strong> {classData.subject_id}</div>
+                        <div><strong>Teacher ID:</strong> {classData.teacher_id}</div>
                     </div>
                     This action cannot be undone.
                 </>}

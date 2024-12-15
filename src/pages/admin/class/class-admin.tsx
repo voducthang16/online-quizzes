@@ -1,74 +1,71 @@
 import { toast } from 'sonner';
-import { useState } from "react";
-import { ClassModel, SubjectModel, UserModel } from "@/models";
+import { useState, useEffect } from "react";
+import { ClassApi } from "@/api/page";
+import { ClassModel } from "@/models";
 import { ClassList } from "./class-list";
-import { ClassForm, ClassFormValues } from "./class-form";
-import { CLASS_LIST } from '@/constants';
+import { LoadingSpinner } from "@/components";
+import { ClassForm } from "./class-form";
 
 const ClassAdmin = () => {
-    const [classes, setClasses] = useState<ClassModel[]>(CLASS_LIST as any);
+    const [classes, setClasses] = useState<ClassModel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleSubmit = (data: ClassFormValues, existingClass?: ClassModel) => {
+    const fetchClasses = async () => {
         try {
-            if (existingClass) {
-                setClasses(currentClasses => 
-                    currentClasses.map(classItem => 
-                        classItem.id === existingClass.id 
-                        ? {
-                            ...classItem,
-                            ...data,
-                            updated_at: new Date().toISOString()
-                        } : classItem
-                    )
-                );
-
-                toast.success('Class Updated', {
-                    description: `${data.name} has been successfully updated.`
-                });
-            } else {
-                const newClass: ClassModel = {
-                    id: new Date().getTime().toString(),
-                    name: data.name,
-                    subjectId: data.subjectId,
-                    teacherId: data.teacherId,
-                    subject: { ...new SubjectModel() },
-                    teacher: { ...new UserModel() },
-                    students: [],
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    isDeleted: false,
-                };
-
-                setClasses(currentClasses => [newClass, ...currentClasses]);
-
-                toast.success('Class Created', {
-                    description: `${data.name} has been successfully added.`
-                });
+            const response = await ClassApi.getAllClasses();
+            if (response.data) {
+                setClasses(response.data.data);
             }
-        } catch (error) {
+        } catch (error: any) {
+            toast.error('Failed to fetch classes', {
+                description: error?.message || 'Unable to load classes. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchClasses();
+    }, []);
+
+    const handleSubmit = async () => {
+        try {
+            await fetchClasses(); // Refresh list after changes
+        } catch (error: any) {
             toast.error('Operation Failed', {
-                description: 'Unable to process class operation. Please try again.'
+                description: error?.message || 'Unable to process class operation.'
             });
         }
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: number) => {
         try {
-            const classToDelete = classes.find(classItem => classItem.id === id);
-
+            const classToDelete = classes.find(cls => cls.class_id === id);
+            
+            await ClassApi.deleteClass(id);
+            
             setClasses(currentClasses => 
-                currentClasses.filter(classItem => classItem.id !== id)
+                currentClasses.filter(cls => cls.class_id !== id)
             );
 
             toast.success('Class Deleted', {
-                description: `${classToDelete?.name || 'Class'} has been removed.`,
+                description: `${classToDelete?.class_name || 'Class'} has been removed.`,
             });
-        } catch (error) {
+        } catch (error: any) {
             toast.error('Deletion Failed', {
-                description: 'Unable to delete class. Please try again.'
+                description: error?.message || 'Unable to delete class.'
             });
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
     return (
         <>

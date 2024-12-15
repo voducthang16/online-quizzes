@@ -7,7 +7,7 @@ import { DeleteClassDialog } from "./class-delete";
 interface ClassListProps {
     classes: ClassModel[];
     onSubmit: (data: ClassFormValues, existingClass?: ClassModel) => void;
-    onDelete: (classId: string) => void;
+    onDelete: (classId: number) => void;
 }
 
 export const ClassList = (props: ClassListProps) => {
@@ -15,32 +15,16 @@ export const ClassList = (props: ClassListProps) => {
 
     const columns: ColumnDef<ClassModel>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "class_name",
             header: "Class Name",
         },
         {
-            accessorKey: "subject",
+            accessorKey: "subject_name",
             header: "Subject",
-            cell: ({ row }) => {
-                const subject = row.original.subject;
-                return <span>{subject?.name || 'N/A'}</span>;
-            }
         },
         {
-            accessorKey: "teacher",
+            accessorKey: "teacher_name",
             header: "Teacher",
-            cell: ({ row }) => {
-                const teacher = row.original.teacher;
-                return <span>{teacher?.full_name || 'N/A'}</span>;
-            }
-        },
-        {
-            accessorKey: "students",
-            header: "Students",
-            cell: ({ row }) => {
-                const students = row.original.students;
-                return <span>{students?.length || 0} students</span>;
-            }
         },
         {
             accessorKey: "created_at",

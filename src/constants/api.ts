@@ -21,6 +21,7 @@ export const API = {
         REGISTER: 'users/register',
         GET_ALL: 'users',
         UPDATE: 'users/{0}',
+        GET_ALL_TEACHERS: 'users/teacher',
     },
     SUBJECT: {
         CREATE: 'subjects',

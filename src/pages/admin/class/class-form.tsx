@@ -1,20 +1,21 @@
 import { z } from 'zod';
-import { ClassModel } from "@/models";
+import { toast } from 'sonner';
+import { ClassModel, SubjectModel, UserModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FC, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SUBJECT_LIST, USER_LIST } from '@/constants/fake-data';
+import { ClassApi, SubjectApi, UserApi } from '@/api/page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const classFormSchema = z.object({
-    name: z.string().min(2, "Class name must be at least 2 characters long."),
-    subjectId: z.string().min(1, "Subject is required"),
-    teacherId: z.string().min(1, "Teacher is required"),
+    class_name: z.string().min(2, "Class name must be at least 2 characters long."),
+    subject_id: z.number().int().min(1, "Subject is required"),
+    teacher_id: z.number().int().min(1, "Teacher is required"),
 });
 
 export type ClassFormValues = z.infer<typeof classFormSchema>;
@@ -26,38 +27,103 @@ interface ClassFormProps {
 
 export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const teachers = USER_LIST.filter(user => user.role === 'Teacher');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [teachers, setTeachers] = useState<UserModel[]>([]);
+    const [subjects, setSubjects] = useState<SubjectModel[]>([]);
+    const [isLoading, setIsLoading] = useState({
+        teachers: false,
+        subjects: false
+    });
+
+    const fetchData = async () => {
+        try {
+            setIsLoading({ teachers: true, subjects: true });
+
+            const [teachersResponse, subjectsResponse] = await Promise.all([
+                UserApi.getAllTeachers(),
+                SubjectApi.getAllSubjects(),
+            ]);
+
+            if (teachersResponse.data) {
+                setTeachers(teachersResponse.data.data);
+            }
+            if (subjectsResponse.data) {
+                setSubjects(subjectsResponse.data.data);
+            }
+        } catch (error: any) {
+            toast.error('Failed to load data', {
+                description: error?.message || 'Please try again'
+            });
+        } finally {
+            setIsLoading({ teachers: false, subjects: false });
+        }
+    };
+
+    useEffect(() => {
+        if (isDialogOpen) {
+            fetchData();
+        }
+    }, [isDialogOpen]);
 
     const form = useForm<ClassFormValues>({
         resolver: zodResolver(classFormSchema),
         defaultValues: classData ? {
-            name: classData.name,
-            subjectId: classData.subjectId,
-            teacherId: classData.teacherId,
+            class_name: classData.class_name,
+            subject_id: classData.subject_id,
+            teacher_id: classData.teacher_id,
         } : {
-            name: '',
-            subjectId: '',
-            teacherId: '',
+            class_name: undefined,
+            subject_id: undefined,
+            teacher_id: undefined,
         }
     });
 
     useEffect(() => {
         if (!isDialogOpen) {
             form.reset(classData ? {
-                name: classData.name,
-                subjectId: classData.subjectId,
-                teacherId: classData.teacherId,
+                class_name: classData.class_name,
+                subject_id: classData.subject_id,
+                teacher_id: classData.teacher_id,
             } : {
-                name: '',
-                subjectId: '',
-                teacherId: '',
+                class_name: undefined,
+                subject_id: undefined,
+                teacher_id: undefined,
             });
         }
     }, [isDialogOpen, form, classData]);
 
-    const handleSubmit = (data: ClassFormValues) => {
-        onSubmit(data);
-        setIsDialogOpen(false);
+    const handleSubmit = async (data: ClassFormValues) => {
+        if (isSubmitting) return;
+
+        try {
+            setIsSubmitting(true);
+
+            const submitAction = classData
+                ? ClassApi.updateClass({
+                    payload: {
+                        class_id: classData.class_id,
+                        ...data
+                    }
+                })
+                : ClassApi.createClass({ payload: data });
+
+            const response = await submitAction;
+
+            if (response.data) {
+                toast.success(classData ? 'Class Updated' : 'Class Created', {
+                    description: `${data.class_name} has been ${classData ? 'updated' : 'created'} successfully.`
+                });
+
+                onSubmit(response.data.data);
+                setIsDialogOpen(false);
+            }
+        } catch (error: any) {
+            toast.error('Operation Failed', {
+                description: error?.message || 'Unable to process class operation.'
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -87,7 +153,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="class_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Class Name</FormLabel>
@@ -100,20 +166,22 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                         />
                         <FormField
                             control={form.control}
-                            name="subjectId"
+                            name="subject_id"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Subject</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a subject" />
+                                                <SelectValue
+                                                    placeholder="Select a subject"
+                                                />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {SUBJECT_LIST.map((subject) => (
-                                                <SelectItem key={subject.id} value={subject.id}>
-                                                    {subject.name}
+                                            {subjects.map((subject) => (
+                                                <SelectItem key={subject.subject_id} value={subject.subject_id}>
+                                                    {subject.subject_name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -124,19 +192,19 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                         />
                         <FormField
                             control={form.control}
-                            name="teacherId"
+                            name="teacher_id"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Teacher</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a teacher" />
+                                                <SelectValue placeholder={isLoading.teachers ? "Loading..." : "Select a teacher"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
                                             {teachers.map((teacher) => (
-                                                <SelectItem key={teacher.id} value={teacher.id}>
+                                                <SelectItem key={teacher.user_id} value={teacher.user_id}>
                                                     {teacher.full_name}
                                                 </SelectItem>
                                             ))}
@@ -147,9 +215,9 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                             )}
                         />
                         <div className="flex justify-end space-x-2">
-                            <Button 
-                                type="button" 
-                                variant="outline" 
+                            <Button
+                                type="button"
+                                variant="outline"
                                 onClick={() => setIsDialogOpen(false)}
                             >
                                 Cancel

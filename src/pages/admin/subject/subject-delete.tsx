@@ -37,7 +37,7 @@ export const DeleteSubjectDialog: FC<DeleteSubjectDialogProps> = ({
                 description={<>
                     Are you sure you want to delete the subject:
                     <div className="my-2 p-2 bg-muted rounded">
-                        <div><strong>Name:</strong> {subject.name}</div>
+                        <div><strong>Name:</strong> {subject.subject_name}</div>
                         <div><strong>Description:</strong> {subject.description}</div>
                     </div>
                     This action cannot be undone.
