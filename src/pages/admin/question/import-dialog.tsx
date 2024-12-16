@@ -65,7 +65,7 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                                 {banks.map((bank) => (
                                     <SelectItem
                                         key={bank.question_bank_id}
-                                        value={bank.question_bank_id}
+                                        value={bank.question_bank_id as any}
                                     >
                                         {bank.bank_name}
                                     </SelectItem>
