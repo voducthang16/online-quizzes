@@ -4,6 +4,7 @@ export const API = {
         DELETE: 'classes/{0}',
         UPDATE: 'classes/{0}',
         GET_ALL: 'classes',
+        GET_DETAIL: 'classes/{0}',
         GET_STUDENTS: 'classes/{0}/students',
         GET_TEACHERS: 'classes/{0}/teachers',
         GET_CLASS_BY_TEACHER: 'teachers/{0}/classes',
@@ -21,7 +22,8 @@ export const API = {
         REGISTER: 'users/register',
         GET_ALL: 'users',
         UPDATE: 'users/{0}',
-        GET_ALL_TEACHERS: 'users/teacher',
+        GET_ALL_TEACHERS: 'users/teachers',
+        GET_ALL_STUDENTS: 'users/students',
     },
     SUBJECT: {
         CREATE: 'subjects',

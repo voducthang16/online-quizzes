@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { BankModel } from "@/models";
+import { BankModel, UserModel } from "@/models";
 import { Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog, ConfirmDialogType } from '@/components';
@@ -39,7 +39,7 @@ export const DeleteBankDialog: FC<DeleteBankDialogProps> = ({
                     <div className="my-2 p-2 bg-muted rounded">
                         <div><strong>Name:</strong> {bank.bank_name}</div>
                         <div><strong>Status:</strong> {bank.is_public ? 'Public' : 'Private'}</div>
-                        <div><strong>Created By:</strong> {bank.created_by?.full_name}</div>
+                        <div><strong>Created By:</strong> {(bank.created_by as UserModel)?.full_name}</div>
                     </div>
                     This action cannot be undone.
                 </>}

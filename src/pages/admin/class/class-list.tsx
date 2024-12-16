@@ -1,8 +1,9 @@
 import { ClassModel } from "@/models";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
-import { ClassForm, ClassFormValues } from "./class-form";
+import { ClassForm } from "./class-form";
 import { DeleteClassDialog } from "./class-delete";
+import { ClassAddStudent } from "./class-add-student";
 
 interface ClassListProps {
     classes: ClassModel[];
@@ -49,6 +50,7 @@ export const ClassList = (props: ClassListProps) => {
                 const classData = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
+                        <ClassAddStudent onSubmit={onSubmit} classData={classData} />
                         <ClassForm class={classData} onSubmit={onSubmit}/>
                         <DeleteClassDialog class={classData} onDelete={onDelete} />
                     </div>

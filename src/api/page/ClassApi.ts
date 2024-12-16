@@ -16,6 +16,18 @@ export const ClassApi = {
         });
     },
 
+    getDetail(id: number) {
+        return BaseService.get<ClassModel>({
+            url: API.CLASS.GET_DETAIL.format(id),
+        });
+    },
+
+    getStudentsInClass(classId: number) {
+        return BaseService.get<UserModel[]>({
+            url: API.CLASS.GET_STUDENTS.format(classId),
+        });
+    },
+
     updateClass(request: Partial<ApiRequestModel<ClassModel>>) {
         return BaseService.put<ClassModel>({
             url: API.CLASS.UPDATE.format(request.payload.class_id),

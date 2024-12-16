@@ -29,6 +29,12 @@ export const UserApi = {
         });
     },
 
+    getAllStudents() {
+        return BaseService.get<UserModel[]>({
+            url: API.USER.GET_ALL_STUDENTS,
+        });
+    },
+
     updateUser(request: Partial<ApiRequestModel<UserModel>>) {
         return BaseService.put<UserModel>({
             url: API.USER.UPDATE.format(request.payload.user_id),

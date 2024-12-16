@@ -2,7 +2,7 @@ import { ApiRequestModel, ApiResponseModel } from '@/models';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 const api: AxiosInstance = axios.create({
-    baseURL: "https://fbe9-125-235-239-241.ngrok-free.app/api/",
+    baseURL: "http://localhost:3333/api/",
     headers: {
         'Content-Type': 'application/json',
     },

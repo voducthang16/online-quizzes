@@ -144,7 +144,7 @@ export const UserForm: FC<UserFormProps> = ({ user, onSubmit }) => {
                                     <Select 
                                         onValueChange={field.onChange} 
                                         defaultValue={field.value}
-                                        disabled={!!user?.id}
+                                        disabled={!!user?.user_id}
                                     >
                                         <FormControl>
                                             <SelectTrigger>

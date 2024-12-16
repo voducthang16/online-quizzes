@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { ClassModel, SubjectModel, UserModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FC, useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ClassApi, SubjectApi, UserApi } from '@/api/page';
+import { ClassModel, SubjectModel, UserModel } from "@/models";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -30,18 +30,60 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [teachers, setTeachers] = useState<UserModel[]>([]);
     const [subjects, setSubjects] = useState<SubjectModel[]>([]);
+    const [classDetail, setClassDetail] = useState<ClassModel | null>(null);
     const [isLoading, setIsLoading] = useState({
         teachers: false,
-        subjects: false
+        subjects: false,
+        classDetail: false
     });
+
+    const form = useForm<ClassFormValues>({
+        resolver: zodResolver(classFormSchema),
+        defaultValues: classData ? {
+            class_name: classData.class_name,
+            subject_id: classData.subject_id,
+            teacher_id: classData.teacher_id,
+        } : {
+            class_name: '',
+            subject_id: undefined,
+            teacher_id: undefined,
+        }
+    });
+
+    const fetchClassDetail = async () => {
+        if (!classData?.class_id) return;
+
+        try {
+            setIsLoading(prev => ({ ...prev, classDetail: true }));
+            const response = await ClassApi.getDetail(classData.class_id);
+            if (response.data) {
+                setClassDetail(response.data.data);
+                form.reset({
+                    class_name: response.data.data.class_name,
+                    subject_id: response.data.data.subject_id,
+                    teacher_id: response.data.data.teacher_id,
+                });
+            }
+        } catch (error: any) {
+            toast.error('Failed to load class details', {
+                description: error?.message || 'Please try again'
+            });
+        } finally {
+            setIsLoading(prev => ({ ...prev, classDetail: false }));
+        }
+    };
 
     const fetchData = async () => {
         try {
-            setIsLoading({ teachers: true, subjects: true });
+            setIsLoading(prev => ({
+                ...prev,
+                teachers: true,
+                subjects: true
+            }));
 
             const [teachersResponse, subjectsResponse] = await Promise.all([
                 UserApi.getAllTeachers(),
-                SubjectApi.getAllSubjects(),
+                SubjectApi.getAllSubjects()
             ]);
 
             if (teachersResponse.data) {
@@ -55,42 +97,22 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                 description: error?.message || 'Please try again'
             });
         } finally {
-            setIsLoading({ teachers: false, subjects: false });
+            setIsLoading(prev => ({
+                ...prev,
+                teachers: false,
+                subjects: false
+            }));
         }
     };
 
     useEffect(() => {
         if (isDialogOpen) {
             fetchData();
+            if (classData) {
+                fetchClassDetail();
+            }
         }
-    }, [isDialogOpen]);
-
-    const form = useForm<ClassFormValues>({
-        resolver: zodResolver(classFormSchema),
-        defaultValues: classData ? {
-            class_name: classData.class_name,
-            subject_id: classData.subject_id,
-            teacher_id: classData.teacher_id,
-        } : {
-            class_name: undefined,
-            subject_id: undefined,
-            teacher_id: undefined,
-        }
-    });
-
-    useEffect(() => {
-        if (!isDialogOpen) {
-            form.reset(classData ? {
-                class_name: classData.class_name,
-                subject_id: classData.subject_id,
-                teacher_id: classData.teacher_id,
-            } : {
-                class_name: undefined,
-                subject_id: undefined,
-                teacher_id: undefined,
-            });
-        }
-    }, [isDialogOpen, form, classData]);
+    }, [isDialogOpen, classData]);
 
     const handleSubmit = async (data: ClassFormValues) => {
         if (isSubmitting) return;
@@ -102,6 +124,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                 ? ClassApi.updateClass({
                     payload: {
                         class_id: classData.class_id,
+                        students: classDetail.students.map(s => ({ student_id: s.user_id })),
                         ...data
                     }
                 })
