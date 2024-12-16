@@ -28,6 +28,7 @@ interface ExamFormProps {
 }
 
 export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
+    const { userInfo } = useUserStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [subjects, setSubjects] = useState<SubjectModel[]>([]);
@@ -120,7 +121,7 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                         questions: examDetail?.questions || []
                     }
                 })
-                : ExamApi.createExam({ payload: { ...data, created_by: (examDetail.created_by as UserModel).user_id, questions: [] } });
+                : ExamApi.createExam({ payload: { ...data, created_by: userInfo.user_id, questions: [] } });
 
             const response = await submitAction;
 

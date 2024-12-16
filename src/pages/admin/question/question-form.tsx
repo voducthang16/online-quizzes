@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { BankApi, QuestionListApi } from '@/api/page';
 import { BankModel, QuestionModel } from "@/models";
 import { useForm } from 'react-hook-form';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil, Plus, Upload } from 'lucide-react';
@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ImportDialog } from './import-dialog';
 
 interface AnswerOption {
     id: number;
@@ -124,34 +125,29 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
         }
     };
 
+    const [isImportOpen, setIsImportOpen] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setIsUploading(true);
-            try {
-                // Prepare form data for API
-                const formData = new FormData();
-                formData.append('file', file);
+    const handleImport = async (bankId: number, file: File) => {
+        setIsUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('bank_id', bankId.toString());
 
-                // TODO: Replace with actual API call
-                // await uploadQuestionsCsv(formData);
+            // TODO: Replace with actual API call
+            // await uploadQuestionsCsv(formData);
 
-                toast.success('Upload Successful', {
-                    description: 'Questions have been imported'
-                });
-            } catch (error) {
-                toast.error('Upload Failed', {
-                    description: 'Unable to process file. Please try again.'
-                });
-            } finally {
-                setIsUploading(false);
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                }
-            }
+            toast.success('Upload Successful', {
+                description: 'Questions have been imported'
+            });
+            onSubmit();
+        } catch (error) {
+            toast.error('Upload Failed', {
+                description: 'Unable to process file. Please try again.'
+            });
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -322,23 +318,21 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                     </Form>
                 </DialogContent>
                 {!isHideImport && (
-                    <div className="relative">
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            accept=".csv"
-                            className="hidden"
-                            onChange={handleFileUpload}
-                        />
+                    <>
                         <Button
                             variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
+                            onClick={() => setIsImportOpen(true)}
                             disabled={isUploading}
                         >
                             <Upload className="h-4 w-4 mr-2" />
                             {isUploading ? 'Uploading...' : 'Import CSV'}
                         </Button>
-                    </div>
+                        <ImportDialog
+                            isOpen={isImportOpen}
+                            onClose={() => setIsImportOpen(false)}
+                            onSubmit={handleImport}
+                        />
+                    </>
                 )}
             </Dialog>
         </div>
