@@ -41,9 +41,9 @@ export const ClassApi = {
         });
     },
 
-    getClassStudents(classId: string) {
-        return BaseService.get<UserModel[]>({
-            url: API.CLASS.GET_STUDENTS.format(classId),
+    getClassesStudentEnroll(classId: number) {
+        return BaseService.get<ClassModel[]>({
+            url: API.CLASS.GET_CLASS_STUDENT_ENROLL.format(classId),
         });
     },
 

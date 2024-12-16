@@ -9,4 +9,10 @@ export const ROUTES = {
     LOGIN: 'login',
     UNAUTHORIZED: 'unauthorized',
     NOT_FOUND: '*',
+    CLASS_ROUTE: {
+        STUDENT: ':id',
+    },
+    EXAM_ROUTE: {
+        TAKE: 'take/:id',
+    },
 };

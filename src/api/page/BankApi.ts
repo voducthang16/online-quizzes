@@ -17,7 +17,7 @@ export const BankApi = {
         });
     },
 
-    getBankDetail(id: string) {
+    getBankDetail(id: number) {
         return BaseService.get<BankModel>({
             url: API.QUESTION_BANK.GET_DETAIL.format(id),
         });

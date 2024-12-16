@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ExamApi, SubjectApi, ClassApi } from '@/api/page';
-import { ExamModel, SubjectModel, ClassModel } from "@/models";
+import { ExamModel, SubjectModel, ClassModel, UserModel } from "@/models";
 import { useForm } from 'react-hook-form';
 import { Pencil, Plus } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -32,42 +32,64 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [subjects, setSubjects] = useState<SubjectModel[]>([]);
     const [classes, setClasses] = useState<ClassModel[]>([]);
+    const [examDetail, setExamDetail] = useState<ExamModel | null>(null);
     const [isLoading, setIsLoading] = useState({
         subjects: false,
-        classes: false
+        classes: false,
+        examDetail: false
     });
 
-    const { userInfo } = useUserStore();
+    const fetchExamDetail = async () => {
+        if (!exam?.exam_id) return;
+        
+        try {
+            setIsLoading(prev => ({ ...prev, examDetail: true }));
+            const response = await ExamApi.getDetailExam(exam.exam_id);
+            if (response.data) {
+                setExamDetail(response.data.data);
+                form.reset({
+                    exam_name: response.data.data.exam_name,
+                    subject_id: response.data.data.subject_id,
+                    class_id: response.data.data.class_id,
+                    duration: response.data.data.duration,
+                });
+            }
+        } catch (error: any) {
+            toast.error('Failed to load exam details', {
+                description: error?.message || 'Please try again'
+            });
+        } finally {
+            setIsLoading(prev => ({ ...prev, examDetail: false }));
+        }
+    };
 
     const fetchData = async () => {
         try {
-            setIsLoading({ subjects: true, classes: true });
-            
+            setIsLoading(prev => ({ ...prev, subjects: true, classes: true }));
             const [subjectsResponse, classesResponse] = await Promise.all([
                 SubjectApi.getAllSubjects(),
                 ClassApi.getAllClasses()
             ]);
 
-            if (subjectsResponse.data) {
-                setSubjects(subjectsResponse.data.data);
-            }
-            if (classesResponse.data) {
-                setClasses(classesResponse.data.data);
-            }
+            if (subjectsResponse.data) setSubjects(subjectsResponse.data.data);
+            if (classesResponse.data) setClasses(classesResponse.data.data);
         } catch (error: any) {
             toast.error('Failed to load data', {
                 description: error?.message || 'Please try again'
             });
         } finally {
-            setIsLoading({ subjects: false, classes: false });
+            setIsLoading(prev => ({ ...prev, subjects: false, classes: false }));
         }
     };
 
     useEffect(() => {
         if (isDialogOpen) {
-            fetchData();
+            Promise.all([
+                fetchData(),
+                exam && fetchExamDetail()
+            ]);
         }
-    }, [isDialogOpen]);
+    }, [isDialogOpen, exam]);
 
     const form = useForm<ExamFormValues>({
         resolver: zodResolver(examFormSchema),
@@ -78,8 +100,8 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
             duration: exam.duration,
         } : {
             exam_name: '',
-            subject_id: 0,
-            class_id: 0,
+            subject_id: undefined,
+            class_id: undefined,
             duration: 30,
         }
     });
@@ -91,8 +113,14 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
             setIsSubmitting(true);
 
             const submitAction = exam 
-                ? ExamApi.updateExam({ payload: { exam_id: exam.exam_id, ...data } })
-                : ExamApi.createExam({ payload: { ...data, created_by: userInfo.user_id, questions: [] } });
+                ? ExamApi.updateExam({
+                    payload: {
+                        exam_id: exam.exam_id,
+                        ...data,
+                        questions: examDetail?.questions || []
+                    }
+                })
+                : ExamApi.createExam({ payload: { ...data, created_by: (examDetail.created_by as UserModel).user_id, questions: [] } });
 
             const response = await submitAction;
 

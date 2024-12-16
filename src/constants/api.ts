@@ -8,6 +8,7 @@ export const API = {
         GET_STUDENTS: 'classes/{0}/students',
         GET_TEACHERS: 'classes/{0}/teachers',
         GET_CLASS_BY_TEACHER: 'teachers/{0}/classes',
+        GET_CLASS_STUDENT_ENROLL: 'classes/students/{0}'
     },
     QUESTION_BANK: {
         CREATE: 'question-banks',
@@ -36,11 +37,16 @@ export const API = {
         CREATE: 'exams',
         UPDATE: 'exams/{0}',
         GET_ALL: 'exams',
+        DETAIL: 'exams/{0}',
+        GET_EXAM_BY_CLASS_ID: 'exams/class/{0}',
     },
     QUESTION_LIST: {
         GET_ALL: 'questions',
         CREATE: 'questions',
         DELETE: 'questions/{0}',
         UPDATE: 'questions/{0}',
+    },
+    RESULT: {
+        SUBMIT: 'results',
     },
 }

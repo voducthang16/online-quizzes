@@ -1,4 +1,5 @@
 import { BaseModel } from "./BaseModel";
+import { QuestionModel } from "./QuestionModel";
 import { UserModel } from "./UserModel";
 
 export class BankModel extends BaseModel {
@@ -6,4 +7,5 @@ export class BankModel extends BaseModel {
     bank_name: string;
     is_public: boolean;
     created_by?: UserModel | number;
+    questions: QuestionModel[];
 }

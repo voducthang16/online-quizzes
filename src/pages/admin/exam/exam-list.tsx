@@ -3,6 +3,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
 import { ExamForm, ExamFormValues } from "./exam-form";
 import { DeleteExamDialog } from "./exam-delete";
+import { formatDateByTimezone } from "@/utils";
+import { ExamAddQuestions } from "./exam-add-questions";
 
 interface ExamListProps {
     exams: ExamModel[];
@@ -53,8 +55,7 @@ export const ExamList = (props: ExamListProps) => {
             accessorKey: "created_at",
             header: "Created At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("created_at"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("created_at"))}</span>
             },
         },
         {
@@ -64,6 +65,7 @@ export const ExamList = (props: ExamListProps) => {
                 const exam = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
+                        <ExamAddQuestions examData={exam} onSubmit={onSubmit}/>
                         <ExamForm exam={exam} onSubmit={onSubmit}/>
                         <DeleteExamDialog exam={exam} onDelete={onDelete} />
                     </div>

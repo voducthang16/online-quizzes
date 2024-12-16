@@ -31,7 +31,7 @@ export const DeleteExamDialog: FC<DeleteExamDialogProps> = ({ exam, onDelete }) 
                     <div className="my-2 p-2 bg-muted rounded">
                         <div><strong>Name:</strong> {exam.exam_name}</div>
                         <div><strong>Subject:</strong> {exam.subject?.subject_name}</div>
-                        <div><strong>Class:</strong> {exam.class?.class_name}</div>
+                        <div><strong>Class:</strong> {exam.classes?.class_name}</div>
                         <div><strong>Questions:</strong> {exam.questions?.length}</div>
                     </div>
                     This action cannot be undone.

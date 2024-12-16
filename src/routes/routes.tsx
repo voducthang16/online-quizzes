@@ -14,6 +14,8 @@ import {
     QuestionPage,
 } from '@/pages';
 import { ExamPage } from '@/pages/exam';
+import ClassDetailPage from '@/pages/share/class-detail';
+import TakeExamPage from '@/pages/share/take-exam';
 
 export interface RouteConfig {
     path: string;
@@ -59,9 +61,18 @@ export const routes: RouteConfig[] = [
         element: <ClassPage />,
         title: 'Class',
         icon: School,
-        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
+        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
         isSidebar: true,
         layout: <MainLayout />,
+        children: [
+            {
+                path: ROUTES.CLASS_ROUTE.STUDENT,
+                element: <ClassDetailPage />,
+                title: 'Student',
+                icon: Users,
+                allowedRoles: [ROLE.STUDENT],
+            }
+        ]
     },
     {
         path: ROUTES.BANK,
@@ -80,6 +91,13 @@ export const routes: RouteConfig[] = [
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
         isSidebar: true,
         layout: <MainLayout />,
+        children: [
+            {
+                path: ROUTES.EXAM_ROUTE.TAKE,
+                element: <TakeExamPage />,
+                allowedRoles: [ROLE.STUDENT],
+            }
+        ]
     },
     {
         path: ROUTES.QUESTION,
