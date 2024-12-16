@@ -193,7 +193,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Subject</FormLabel>
-                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value}>
+                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value as any}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue
@@ -203,7 +203,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                                         </FormControl>
                                         <SelectContent>
                                             {subjects.map((subject) => (
-                                                <SelectItem key={subject.subject_id} value={subject.subject_id}>
+                                                <SelectItem key={subject.subject_id} value={subject.subject_id as any}>
                                                     {subject.subject_name}
                                                 </SelectItem>
                                             ))}
@@ -219,7 +219,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Teacher</FormLabel>
-                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value}>
+                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value as any}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder={isLoading.teachers ? "Loading..." : "Select a teacher"} />
@@ -227,7 +227,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                                         </FormControl>
                                         <SelectContent>
                                             {teachers.map((teacher) => (
-                                                <SelectItem key={teacher.user_id} value={teacher.user_id}>
+                                                <SelectItem key={teacher.user_id} value={teacher.user_id as any}>
                                                     {teacher.full_name}
                                                 </SelectItem>
                                             ))}

@@ -185,7 +185,7 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Subject</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value}>
+                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value as any}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder={"Select a subject"} />
@@ -193,7 +193,7 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                                         </FormControl>
                                         <SelectContent>
                                             {subjects.map((subject) => (
-                                                <SelectItem key={subject.subject_id} value={subject.subject_id}>
+                                                <SelectItem key={subject.subject_id} value={subject.subject_id as any}>
                                                     {subject.subject_name}
                                                 </SelectItem>
                                             ))}
@@ -209,7 +209,7 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Class</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value}>
+                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value as any}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder={"Select a class"} />
@@ -217,7 +217,7 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                                         </FormControl>
                                         <SelectContent>
                                             {classes.map((cls) => (
-                                                <SelectItem key={cls.class_id} value={cls.class_id}>
+                                                <SelectItem key={cls.class_id} value={cls.class_id as any}>
                                                     {cls.class_name}
                                                 </SelectItem>
                                             ))}

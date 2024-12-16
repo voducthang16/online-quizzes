@@ -200,7 +200,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Bank</FormLabel>
-                                        <Select onValueChange={(v) => field.onChange(+v)} value={field.value}>
+                                        <Select onValueChange={(v) => field.onChange(+v)} value={field.value as any}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder={isLoading ? "Loading..." : "Select a bank"} />
@@ -210,7 +210,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                                 {banks.map((bank) => (
                                                     <SelectItem
                                                         key={bank.question_bank_id}
-                                                        value={bank.question_bank_id}
+                                                        value={bank.question_bank_id as any}
                                                     >
                                                         {bank.bank_name}
                                                     </SelectItem>
