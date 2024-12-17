@@ -53,9 +53,15 @@ export const ClassApi = {
         });
     },
 
-    getClassesByTeacher(teacherId: string) {
+    getClassesByTeacher(teacherId: number) {
         return BaseService.get<ClassModel[]>({
             url: API.CLASS.GET_CLASS_BY_TEACHER.format(teacherId),
         });
-    }
+    },
+
+    removeStudentFromClass(classId: number, studentId: number) {
+        return BaseService.delete<void>({
+            url: API.CLASS.REMOVE_STUDENT.format(classId, studentId),
+        });
+    },
 };

@@ -14,14 +14,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ImportDialog } from './import-dialog';
 
 interface AnswerOption {
-    id: number;
+    key: 'A' | 'B' | 'C' | 'D';
     value: string;
 }
 
 const questionFormSchema = z.object({
     question: z.string().min(5, "Question content must be at least 5 characters long."),
     question_bank_id: z.number().min(1, "Bank is required"),
-    correct_answer: z.string().min(1, "Must select correct answer"),
+    correct_answer: z.enum(['A', 'B', 'C', 'D'], { 
+        errorMap: () => ({ message: "Must select correct answer" }) 
+    }),
 });
 
 export type QuestionFormValues = z.infer<typeof questionFormSchema>;
@@ -36,18 +38,21 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [answers, setAnswers] = useState<AnswerOption[]>(
         question?.answer
-            ? JSON.parse(question.answer).map((ans: string, idx: number) => ({
-                id: idx + 1,
-                value: ans
+            ? JSON.parse(question.answer).map((ans: any) => ({
+                key: ans.key,
+                value: ans.value
             }))
-            : Array(4).fill('').map((_, idx) => ({
-                id: idx + 1,
-                value: ''
-            }))
+            : [
+                { key: 'A', value: '' },
+                { key: 'B', value: '' },
+                { key: 'C', value: '' },
+                { key: 'D', value: '' }
+            ]
     );
     const [banks, setBanks] = useState<BankModel[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isImportOpen, setIsImportOpen] = useState(false);
 
     const fetchBanks = async () => {
         try {
@@ -76,11 +81,11 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
         defaultValues: question ? {
             question: question.question,
             question_bank_id: question.question_bank_id,
-            correct_answer: question.correct_answer,
+            correct_answer: question.correct_answer as 'A' | 'B' | 'C' | 'D',
         } : {
             question: '',
             question_bank_id: undefined,
-            correct_answer: '',
+            correct_answer: 'A',
         }
     });
 
@@ -90,7 +95,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
 
         try {
             const validAnswers = answers.filter(a => a.value.trim() !== '');
-            const answersJson = JSON.stringify(validAnswers.map(a => a.value));
+            const answersJson = JSON.stringify(validAnswers);
 
             const submitAction = question
                 ? QuestionListApi.updateQuestion({
@@ -125,30 +130,8 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
         }
     };
 
-    const [isImportOpen, setIsImportOpen] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
-
-    const handleImport = async (bankId: number, file: File) => {
-        setIsUploading(true);
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('bank_id', bankId.toString());
-
-            // TODO: Replace with actual API call
-            // await uploadQuestionsCsv(formData);
-
-            toast.success('Upload Successful', {
-                description: 'Questions have been imported'
-            });
-            onSubmit();
-        } catch (error) {
-            toast.error('Upload Failed', {
-                description: 'Unable to process file. Please try again.'
-            });
-        } finally {
-            setIsUploading(false);
-        }
+    const handleImport = () => {
+        onSubmit();
     };
 
     return (
@@ -218,27 +201,12 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                 )}
                             />
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <FormLabel>Answers</FormLabel>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            const newAnswer = {
-                                                id: answers.length + 1,
-                                                value: ''
-                                            };
-                                            setAnswers([...answers, newAnswer]);
-                                        }}
-                                    >
-                                        Add Answer
-                                    </Button>
-                                </div>
-                                {answers.map((answer, index) => (
-                                    <div key={answer.id} className="flex gap-2">
+                                <FormLabel>Answers</FormLabel>
+                                {['A', 'B', 'C', 'D'].map((key, index) => (
+                                    <div key={key} className="flex gap-2 items-center">
+                                        <div className="w-10 font-bold text-center">{key}</div>
                                         <Input
-                                            value={answer.value}
+                                            value={answers[index].value}
                                             onChange={(e) => {
                                                 const newAnswers = [...answers];
                                                 newAnswers[index] = {
@@ -247,20 +215,8 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                                 };
                                                 setAnswers(newAnswers);
                                             }}
-                                            placeholder={`Answer ${index + 1}`}
+                                            placeholder={`Enter answer ${key}`}
                                         />
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="px-3"
-                                            onClick={() => {
-                                                const newAnswers = answers.filter((_, i) => i !== index);
-                                                setAnswers(newAnswers);
-                                            }}
-                                        >
-                                            ×
-                                        </Button>
                                     </div>
                                 ))}
                             </div>
@@ -273,7 +229,6 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                         <Select
                                             onValueChange={field.onChange}
                                             value={field.value}
-                                            disabled={answers.length === 0}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -281,17 +236,15 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {answers
-                                                    .filter(answer => answer.value.trim() !== '')
-                                                    .map(answer => (
-                                                        <SelectItem
-                                                            key={answer.id}
-                                                            value={answer.value}
-                                                        >
-                                                            {answer.value}
-                                                        </SelectItem>
-                                                    ))
-                                                }
+                                                {['A', 'B', 'C', 'D'].map(key => (
+                                                    <SelectItem
+                                                        key={key}
+                                                        value={key}
+                                                        disabled={!answers.find(ans => ans.key === key)?.value.trim()}
+                                                    >
+                                                        {`${key} - ${answers.find(ans => ans.key === key)?.value || ''}`}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -322,10 +275,9 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                         <Button
                             variant="outline"
                             onClick={() => setIsImportOpen(true)}
-                            disabled={isUploading}
                         >
                             <Upload className="h-4 w-4 mr-2" />
-                            {isUploading ? 'Uploading...' : 'Import CSV'}
+                            Import CSV
                         </Button>
                         <ImportDialog
                             isOpen={isImportOpen}

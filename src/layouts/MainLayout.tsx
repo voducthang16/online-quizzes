@@ -2,6 +2,7 @@ import { Outlet } from "react-router"
 import { AppSidebar } from "./AppSidebar"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { useUserStore } from "@/stores";
+import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb";
 
 export const MainLayout = () => {
     const { userInfo } = useUserStore();
@@ -17,6 +18,7 @@ export const MainLayout = () => {
                         </div>
                     </header>
                     <div className="flex flex-1 flex-col p-4">
+                        <DynamicBreadcrumb />
                         <div className="grid">
                             <Outlet />
                         </div>

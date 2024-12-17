@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { ClassApi } from '@/api/page';
 import { ClassModel } from '@/models';
 import { toast } from 'sonner';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Users, BookOpen, Clock, ArrowRight } from 'lucide-react';
 import { formatDateByTimezone } from '@/utils';
@@ -60,8 +60,8 @@ export const StudentClassList: FC<StudentClassListProps> = ({ studentId }) => {
     }
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold">My Classes</h2>
+        <div className="container mx-auto">
+            <h2 className="mb-8 text-2xl font-bold">My Classes</h2>
             {classes.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                     You are not enrolled in any classes yet.
@@ -73,9 +73,6 @@ export const StudentClassList: FC<StudentClassListProps> = ({ studentId }) => {
                             <Card key={classItem.class_id} className="hover:shadow-lg transition-shadow">
                                 <CardHeader>
                                     <CardTitle>{classItem.class_name}</CardTitle>
-                                    <CardDescription>
-                                        {classItem.subject?.subject_name}
-                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2 text-sm">

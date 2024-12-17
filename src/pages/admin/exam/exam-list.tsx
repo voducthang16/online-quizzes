@@ -40,15 +40,8 @@ export const ExamList = (props: ExamListProps) => {
             accessorKey: "duration",
             header: "Duration",
             cell: ({ row }) => {
-                return <span>{row.getValue("duration")} minutes</span>;
-            }
-        },
-        {
-            accessorKey: "questions",
-            header: "Questions",
-            cell: ({ row }) => {
-                const questions = row.original.questions;
-                return <span>{questions?.length || 0} questions</span>;
+                const minutes = row.getValue("duration") as number;
+                return <span>{minutes} minute{minutes !== 1 ? 's' : ''}</span>;
             }
         },
         {

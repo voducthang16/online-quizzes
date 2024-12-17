@@ -10,4 +10,5 @@ export class ClassModel extends BaseModel {
     students: Partial<UserModel>[];
     subject: SubjectModel;
     teacher: UserModel;
+    subject_name?: string;
 };

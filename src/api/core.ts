@@ -2,7 +2,7 @@ import { ApiRequestModel, ApiResponseModel } from '@/models';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 const api: AxiosInstance = axios.create({
-    baseURL: "https://68dd-125-235-239-241.ngrok-free.app/api/",
+    baseURL: "http://localhost:3334/api//",
     headers: {
         'Content-Type': 'application/json',
     },
@@ -38,7 +38,12 @@ export const BaseService = {
         });
     },
     post<T>({ url, payload, headers = {} }: Partial<ApiRequestModel>): Promise<AxiosResponse<ApiResponseModel<T>>> {
-        return api.post<ApiResponseModel<T>>(url, payload, { headers });
+        return api.post<ApiResponseModel<T>>(url, payload, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            }
+        });
     },
     put<T>({ url, payload, headers = {} }: Partial<ApiRequestModel>): Promise<AxiosResponse<ApiResponseModel<T>>> {
         return api.put<ApiResponseModel<T>>(url, payload, { headers });

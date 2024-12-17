@@ -2,6 +2,12 @@ import { ApiRequestModel, QuestionModel } from "@/models";
 import { BaseService } from "../core";
 import { API } from "@/constants";
 
+interface uploadQuestionProps {
+    question: string;
+    user_id: number;
+    question_bank_id: number;
+}
+
 export const QuestionListApi = {
     createQuestion(request: Partial<ApiRequestModel<QuestionModel>>) {
         return BaseService.post<QuestionModel>({
@@ -27,5 +33,12 @@ export const QuestionListApi = {
         return BaseService.delete<void>({
             url: API.QUESTION_LIST.DELETE.format(id),
         });
-    }
+    },
+
+    uploadQuestions(request: uploadQuestionProps) {
+        return BaseService.post<void>({
+            url: API.QUESTION_LIST.UPLOAD,
+            payload: request,
+        });
+    },
 };

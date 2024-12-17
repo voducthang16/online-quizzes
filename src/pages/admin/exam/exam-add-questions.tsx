@@ -171,7 +171,7 @@ export const ExamAddQuestions: FC<ExamAddQuestionsProps> = ({ examData, onSubmit
                                                 className="flex items-center justify-between"
                                             >
                                                 <div className="flex-1 pr-4">
-                                                    <p className="font-medium truncate">{question.question}</p>
+                                                    <p className="font-medium truncate max-w-[210px]">{question.question}</p>
                                                 </div>
                                                 <Button
                                                     size="sm"
@@ -216,7 +216,7 @@ export const ExamAddQuestions: FC<ExamAddQuestionsProps> = ({ examData, onSubmit
                                                         className="flex items-center justify-between"
                                                     >
                                                         <div className="flex-1 pr-4">
-                                                            <p className="font-medium truncate">{question.question}</p>
+                                                            <p className="font-medium truncate max-w-[220px]">{question.question}</p>
                                                         </div>
                                                         <Button
                                                             size="sm"

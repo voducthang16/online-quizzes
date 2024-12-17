@@ -1,22 +1,23 @@
-import { FC, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
-import { ClassApi, ExamApi } from '@/api/page';
-import { ClassModel, ExamModel } from '@/models';
-import { useUserStore } from '@/stores';
 import { ROLE } from '@/constants';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LoadingSpinner } from '@/components';
-import { Users, BookOpen, Clock, GraduationCap, FileText } from 'lucide-react';
+import { useUserStore } from '@/stores';
+import { ConfirmDialog, LoadingSpinner } from '@/components';
 import { formatDateByTimezone } from '@/utils';
+import { ClassApi, ExamApi } from '@/api/page';
 import { Button } from '@/components/ui/button';
+import { FC, useEffect, useState } from 'react';
+import { ClassModel, ExamModel } from '@/models';
+import { useNavigate, useParams } from 'react-router';
+import { Users, Clock, GraduationCap, FileText } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ClassDetailPage: FC = () => {
     const { id } = useParams();
     const { userInfo } = useUserStore();
     const [classDetail, setClassDetail] = useState<ClassModel | null>(null);
     const [exams, setExams] = useState<ExamModel[]>([]);
+    const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState({
         class: true,
         exams: false
@@ -68,7 +69,7 @@ const ClassDetailPage: FC = () => {
     }, [id]);
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto">
             {isLoading.class ? (
                 <div className="flex justify-center py-8">
                     <LoadingSpinner />
@@ -110,8 +111,57 @@ const ClassDetailPage: FC = () => {
 
                         {userInfo?.role !== ROLE.STUDENT && (
                             <TabsContent value="students" className="mt-4">
-                                <div className="text-center py-8 text-muted-foreground">
-                                    Students list coming soon
+                                <div className="rounded-md border">
+                                    {classDetail.students?.length ? (
+                                        <div className="divide-y">
+                                            {classDetail.students.map((student) => (
+                                                <div
+                                                    key={student.student_id}
+                                                    className="p-4 flex items-center justify-between hover:bg-gray-50"
+                                                >
+                                                    <div>
+                                                        <p className="font-medium">{student.full_name}</p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {student.email}
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="destructive"
+                                                        onClick={() => setIsOpen(true)}
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                    <ConfirmDialog
+                                                        open={isOpen}
+                                                        onOpenChange={setIsOpen}
+                                                        title="Remove Student"
+                                                        description={`Are you sure you want to remove ${student.full_name} from this class?`}
+                                                        onConfirm={async () => {
+                                                            try {
+                                                                await ClassApi.removeStudentFromClass(
+                                                                    classDetail.class_id,
+                                                                    student.student_id
+                                                                );
+                                                                toast.success('Student Removed', {
+                                                                    description: `${student.full_name} has been removed from the class.`
+                                                                });
+                                                                fetchClassDetail();
+                                                            } catch (error: any) {
+                                                                toast.error('Failed to remove student', {
+                                                                    description: error?.message || 'Please try again'
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            No students enrolled in this class
+                                        </div>
+                                    )}
                                 </div>
                             </TabsContent>
                         )}

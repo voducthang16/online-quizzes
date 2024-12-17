@@ -20,17 +20,9 @@ export const QuestionList = (props: QuestionListProps) => {
             header: "Question",
             cell: ({ row }) => {
                 const content = row.getValue("question") as string;
-                return <div className="max-w-[400px] truncate">{content}</div>;
+                return <div className="max-w-[300px] truncate">{content}</div>;
             }
         },
-        // {
-        //     accessorKey: "bank",
-        //     header: "Bank",
-        //     cell: ({ row }) => {
-        //         const bank = row.original.bank;
-        //         return <span>{bank?.bank_name || 'N/A'}</span>;
-        //     }
-        // },
         {
             accessorKey: "correct_answer",
             header: "Correct Answer",

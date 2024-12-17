@@ -68,9 +68,9 @@ export const routes: RouteConfig[] = [
             {
                 path: ROUTES.CLASS_ROUTE.STUDENT,
                 element: <ClassDetailPage />,
-                title: 'Student',
+                title: 'Class Detail',
                 icon: Users,
-                allowedRoles: [ROLE.STUDENT],
+                allowedRoles: [ROLE.TEACHER, ROLE.STUDENT],
             }
         ]
     },

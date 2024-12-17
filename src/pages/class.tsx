@@ -4,6 +4,7 @@ import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components";
 
 const ClassAdmin = lazy(() => import('./admin/class/class-admin'));
+const ClassTeacher = lazy(() => import('./teacher/class/class-teacher'));
 const ClassStudent = lazy(() => import('./student/class/class-student'));
 
 export const ClassPage = () => {
@@ -13,6 +14,8 @@ export const ClassPage = () => {
         switch (userInfo?.role) {
             case ROLE.ADMIN:
                 return <ClassAdmin />;
+            case ROLE.TEACHER:
+                return <ClassTeacher />;
             case ROLE.STUDENT:
                 return <ClassStudent />;
             default:
