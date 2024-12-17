@@ -54,7 +54,7 @@ baseURL: "http://localhost:3334/api/"  # Update with your backend URL
 3. **Start Development**
 ```bash
 # Start frontend development server
-npm run dev
+npm run start
 ```
 
 ## License
