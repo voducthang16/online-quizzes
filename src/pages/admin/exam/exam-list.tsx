@@ -1,4 +1,4 @@
-import { ExamModel } from "@/models";
+import { ExamModel, UserModel } from "@/models";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/data-table";
 import { ExamForm, ExamFormValues } from "./exam-form";
@@ -19,6 +19,13 @@ export const ExamList = (props: ExamListProps) => {
         {
             accessorKey: "exam_name",
             header: "Exam Name",
+        },
+        {
+            accessorKey: "created_by",
+            header: "Created By",
+            cell: ({ row }) => {
+                return <span>{(row.original.created_by as UserModel)?.full_name || 'N/A'}</span>
+            }
         },
         {
             accessorKey: "subject",

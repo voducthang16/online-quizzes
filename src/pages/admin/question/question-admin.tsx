@@ -1,18 +1,26 @@
 import { toast } from 'sonner';
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import { QuestionListApi } from "@/api/page";
 import { QuestionModel } from "@/models";
 import { QuestionList } from "./question-list";
 import { LoadingSpinner } from "@/components";
 import { QuestionForm } from "./question-form";
+import { useUserStore } from '@/stores';
 
-const QuestionAdmin = () => {
+interface QuestionAdminProps {
+    isTeacherView?: boolean;
+}
+
+const QuestionAdmin: FC<QuestionAdminProps> = ({ isTeacherView = false }) => {
     const [questions, setQuestions] = useState<QuestionModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { userInfo } = useUserStore();
 
     const fetchQuestions = async () => {
         try {
-            const response = await QuestionListApi.getAllQuestions();
+            const response = isTeacherView 
+                ? await QuestionListApi.getQuestionByUser(userInfo?.user_id)
+                : await QuestionListApi.getAllQuestions();
             if (response.data) {
                 setQuestions(response.data.data);
             }

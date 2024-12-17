@@ -16,6 +16,7 @@ import {
 import { ExamPage } from '@/pages/exam';
 import ClassDetailPage from '@/pages/share/class-detail';
 import TakeExamPage from '@/pages/share/take-exam';
+import { RoleRedirect } from './role-redirect';
 
 export interface RouteConfig {
     path: string;
@@ -85,10 +86,17 @@ export const routes: RouteConfig[] = [
     },
     {
         path: ROUTES.EXAM,
-        element: <ExamPage />,
+        element: <>
+            <RoleRedirect 
+                restrictedRoles={[ROLE.STUDENT]} 
+                redirectPath="/class"
+            >
+                <ExamPage />
+            </RoleRedirect>
+        </>,
         title: 'Exam',
         icon: Vote,
-        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
+        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
         isSidebar: true,
         layout: <MainLayout />,
         children: [

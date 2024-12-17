@@ -42,4 +42,10 @@ export const ExamApi = {
             ...request,
         });
     },
+
+    getExamsByUserId(userId: number) {
+        return BaseService.get<ExamModel[]>({
+            url: API.EXAM.GET_EXAM_BY_USER_ID.format(userId),
+        });
+    },
 };

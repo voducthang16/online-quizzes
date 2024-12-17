@@ -1,6 +1,6 @@
 import { ROLE } from "@/constants";
-import { useUserStore } from "@/stores";
 import { lazy, Suspense } from "react";
+import { useUserStore } from "@/stores";
 import { LoadingSpinner } from "@/components";
 
 const ExamAdmin = lazy(() => import('./admin/exam/exam-admin'));
@@ -12,6 +12,8 @@ export const ExamPage = () => {
         switch (userInfo?.role) {
             case ROLE.ADMIN:
                 return <ExamAdmin />;
+                case ROLE.TEACHER:
+                    return <ExamAdmin isTeacherView />;
             default:
                 return (
                     <div className="text-center text-red-500">

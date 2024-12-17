@@ -12,6 +12,8 @@ export const BankPage = () => {
         switch (userInfo?.role) {
             case ROLE.ADMIN:
                 return <BankAdmin />;
+                case ROLE.TEACHER:
+                    return <BankAdmin isTeacherView />;
             default:
                 return (
                     <div className="text-center text-red-500">

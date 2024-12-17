@@ -41,4 +41,11 @@ export const QuestionListApi = {
             payload: request,
         });
     },
+
+    getQuestionByUser(userId: number) {
+        return BaseService.get<QuestionModel[]>({
+            url: API.QUESTION_LIST.GET_QUESTION_BY_USER_ID.format(userId),
+        });
+    },
+
 };

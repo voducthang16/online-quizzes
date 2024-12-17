@@ -1,18 +1,26 @@
 import { toast } from 'sonner';
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import { BankApi } from "@/api/page";
 import { BankModel } from "@/models";
 import { BankList } from "./bank-list";
 import { LoadingSpinner } from "@/components";
 import { BankForm } from "./bank-form";
+import { useUserStore } from '@/stores';
 
-const BankAdmin = () => {
+interface BankAdminProps {
+    isTeacherView?: boolean;
+}
+
+const BankAdmin: FC<BankAdminProps> = ({ isTeacherView = false }) => {
     const [banks, setBanks] = useState<BankModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { userInfo } = useUserStore();
 
     const fetchBanks = async () => {
         try {
-            const response = await BankApi.getAllBanks();
+            const response = isTeacherView 
+                ? await BankApi.getBanksByUser(userInfo?.user_id)
+                : await BankApi.getAllBanks();
             if (response.data) {
                 setBanks(response.data.data);
             }

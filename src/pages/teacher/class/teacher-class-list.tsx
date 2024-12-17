@@ -46,9 +46,6 @@ const TeacherClassList: FC = () => {
         <div className="container mx-auto">
             <div className="mb-8">
                 <h1 className="text-2xl font-bold">My Classes</h1>
-                <p className="text-muted-foreground mt-2">
-                    Classes you are teaching
-                </p>
             </div>
 
             {classes.length === 0 ? (

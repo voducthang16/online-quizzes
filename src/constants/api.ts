@@ -40,6 +40,7 @@ export const API = {
         GET_ALL: 'exams',
         DETAIL: 'exams/{0}',
         GET_EXAM_BY_CLASS_ID: 'exams/class/{0}',
+        GET_EXAM_BY_USER_ID: 'exams/user/{0}',
     },
     QUESTION_LIST: {
         GET_ALL: 'questions',
@@ -47,6 +48,7 @@ export const API = {
         DELETE: 'questions/{0}',
         UPDATE: 'questions/{0}',
         UPLOAD: 'questions/upload',
+        GET_QUESTION_BY_USER_ID: 'questions/user/{0}',
     },
     RESULT: {
         SUBMIT: 'results',

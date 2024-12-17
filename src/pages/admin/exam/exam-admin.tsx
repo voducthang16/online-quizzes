@@ -1,18 +1,26 @@
 import { toast } from 'sonner';
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import { ExamApi } from "@/api/page";
 import { ExamModel } from "@/models";
 import { ExamList } from "./exam-list";
 import { ExamForm } from "./exam-form";
 import { LoadingSpinner } from "@/components";
+import { useUserStore } from '@/stores';
 
-const ExamAdmin = () => {
+interface ExamAdminProps {
+    isTeacherView?: boolean;
+}
+
+const ExamAdmin: FC<ExamAdminProps> = ({ isTeacherView = false }) => {
     const [exams, setExams] = useState<ExamModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { userInfo } = useUserStore();
 
     const fetchExams = async () => {
         try {
-            const response = await ExamApi.getAllExams({});
+            const response = isTeacherView 
+                ? await ExamApi.getExamsByUserId(userInfo?.user_id)
+                : await ExamApi.getAllExams({});
             if (response.data) {
                 setExams(response.data.data);
             }

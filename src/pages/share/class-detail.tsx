@@ -210,7 +210,7 @@ const ClassDetailPage: FC = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-8 text-muted-foreground">
+                                <div className="rounded-md border text-center py-8 text-muted-foreground">
                                     No exams available for this class
                                 </div>
                             )}

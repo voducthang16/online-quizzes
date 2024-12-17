@@ -36,7 +36,7 @@ export const BankApi = {
         });
     },
 
-    getBanksByUser(userId: string) {
+    getBanksByUser(userId: number) {
         return BaseService.get<BankModel[]>({
             url: API.QUESTION_BANK.GET_QUESTION_BANK_BY_USER.format(userId),
         });

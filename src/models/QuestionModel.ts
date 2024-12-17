@@ -7,7 +7,7 @@ export class QuestionModel extends BaseModel {
     question: string;
     answer: string;
     correct_answer: string;
-    bank_id?: string;
+    bank_id?: number;
     bank?: BankModel;
     student_answer?: string;
 }

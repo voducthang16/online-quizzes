@@ -12,6 +12,8 @@ export const QuestionPage = () => {
         switch (userInfo?.role) {
             case ROLE.ADMIN:
                 return <QuestionAdmin />;
+            case ROLE.TEACHER:
+                return <QuestionAdmin isTeacherView />;
             default:
                 return (
                     <div className="text-center text-red-500">
