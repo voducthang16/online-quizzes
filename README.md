@@ -1,50 +1,61 @@
-# React + TypeScript + Vite
+# Quiz Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for managing quizzes, exams and class assignments built with React, TypeScript and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 👥 Role-based access (Admin, Teacher, Student)
+- 📚 Class management system
+- 📝 Question bank management
+- 📋 Exam creation and management
+- 🔐 Authentication and authorization
+- 🎨 Modern UI with shadcn/ui components
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React + Vite + TypeScript
+- Tailwind CSS for styling
+- Shadcn UI component library
+- React Router for navigation
+- Zustand for state management
+- Axios for API calls
+- React Hook Form + Zod for form handling
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Prerequisites
+
+- Node.js 16+
+- npm or yarn
+- Java 17+ (for backend)
+- MySQL 8.0+ (for backend)
+
+### Installation & Setup
+1. **Backend Setup**
+```bash
+# Clone backend repository
+git clone https://github.com/thanhdao86/quize_online/
+
+# Follow backend setup instructions
+# Make sure MySQL is running and configured
+```
+2. **Frontend Setup**
+```bash
+# Clone this repository
+git clone https://github.com/voducthang16/online-quizzes
+
+# Install dependencies
+npm install
+
+# Configure API endpoint
+# Edit src/api/core.ts:
+baseURL: "http://localhost:3334/api/"  # Update with your backend URL
+```
+3. **Start Development**
+```bash
+# Start frontend development server
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## License
+MIT License - feel free to use this code for your own projects.
