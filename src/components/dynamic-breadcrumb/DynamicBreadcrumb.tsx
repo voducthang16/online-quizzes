@@ -23,7 +23,7 @@ export const DynamicBreadcrumb = () => {
                         </Link>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
-                
+
                 {breadcrumbs.map((crumb, index) => (
                     <BreadcrumbItem key={crumb.path}>
                         <BreadcrumbSeparator />

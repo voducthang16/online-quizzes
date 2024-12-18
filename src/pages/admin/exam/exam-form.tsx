@@ -89,6 +89,14 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                 fetchData(),
                 exam && fetchExamDetail()
             ]);
+        } else {
+            form.reset({
+                exam_name: '',
+                subject_id: undefined,
+                class_id: undefined,
+                duration: 30,
+            });
+            form.clearErrors();
         }
     }, [isDialogOpen, exam]);
 

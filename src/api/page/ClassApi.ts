@@ -16,9 +16,10 @@ export const ClassApi = {
         });
     },
 
-    getDetail(id: number) {
+    getDetail(id: number, request?: Partial<ApiRequestModel<ClassModel>>) {
         return BaseService.get<ClassModel>({
             url: API.CLASS.GET_DETAIL.format(id),
+            ...request,
         });
     },
 

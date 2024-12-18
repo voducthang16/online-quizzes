@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import { ROLE } from "@/constants";
 import { useUserStore } from "@/stores";
-import { Navigate } from "react-router";
+import { Navigate, useParams } from "react-router";
 
 interface RoleRedirectProps {
     children: ReactNode;

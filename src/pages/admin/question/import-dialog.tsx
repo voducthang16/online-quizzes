@@ -48,7 +48,7 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
             // Validate file type
             const allowedTypes = ['.csv', '.xlsx', '.xls'];
             const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-            
+
             if (!allowedTypes.includes(fileExtension)) {
                 toast.error('Invalid file type', {
                     description: 'Please upload a CSV or Excel file'
@@ -72,8 +72,6 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
             fileReader.readAsDataURL(selectedFile);
             fileReader.onload = async () => {
                 const base64File = fileReader.result?.toString().split(',')[1];
-
-                console.log(base64File);
 
                 if (!base64File) {
                     toast.error('Failed to read file');
@@ -101,9 +99,9 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                     onClose();
                 } catch (uploadError: any) {
                     toast.error('Upload failed', {
-                        description: uploadError?.response?.data?.message || 
-                                     uploadError?.message || 
-                                     'Unable to upload questions'
+                        description: uploadError?.response?.data?.message ||
+                            uploadError?.message ||
+                            'Unable to upload questions'
                     });
                 }
             };
@@ -125,8 +123,8 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label>Select Question Bank</Label>
-                        <Select 
-                            onValueChange={setSelectedBank} 
+                        <Select
+                            onValueChange={setSelectedBank}
                             value={selectedBank}
                         >
                             <SelectTrigger>
@@ -148,27 +146,27 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                         <Label>Upload File</Label>
                         <Input
                             type="file"
-                            accept=".csv,.xlsx,.xls"
+                            accept=".xlsx"
                             ref={fileInputRef}
                             onChange={handleFileChange}
                             disabled={!selectedBank}
                         />
                         <p className="text-sm text-muted-foreground">
-                            File must be in CSV or Excel format with columns: 
-                            question, answer A, answer B, answer C, answer D, correct answer
+                            File must be in Excel format with columns:
+                            Question, A, B, C, D, Answer
                         </p>
                     </div>
                 </div>
                 <DialogFooter>
                     <Button
-                        variant="outline" 
+                        variant="outline"
                         onClick={onClose}
                         disabled={isUploading}
                     >
                         Cancel
                     </Button>
-                    <Button 
-                        onClick={handleUpload} 
+                    <Button
+                        onClick={handleUpload}
                         disabled={!selectedFile || !selectedBank || isUploading}
                     >
                         {isUploading ? 'Uploading...' : 'Upload'}

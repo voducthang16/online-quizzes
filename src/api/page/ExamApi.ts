@@ -24,15 +24,17 @@ export const ExamApi = {
         });
     },
 
-    getDetailExam(id: number) {
+    getDetailExam(id: number, request?: Partial<ApiRequestModel<ExamModel>>) {
         return BaseService.get<ExamModel>({
             url: API.EXAM.DETAIL.format(id),
+            ...request,
         });
     },
 
-    getExamsByClassId(classId: number) {
+    getExamsByClassId(classId: number, request: Partial<ApiRequestModel<ExamModel>>) {
         return BaseService.get<ExamModel[]>({
             url: API.EXAM.GET_EXAM_BY_CLASS_ID.format(classId),
+            ...request,
         });
     },
 

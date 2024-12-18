@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 const TakeExamPage: FC = () => {
-    const { id } = useParams();
+    const { examId } = useParams();
     const navigate = useNavigate();
     const [exam, setExam] = useState<ExamModel | null>(null);
     const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -35,14 +35,18 @@ const TakeExamPage: FC = () => {
     const { userInfo } = useUserStore();
 
     const fetchExam = async () => {
-        if (!id) return;
+        if (!examId) return;
 
         try {
             setIsLoading(prev => ({ ...prev, exam: true }));
-            const response = await ExamApi.getDetailExam(+id);
+            const response = await ExamApi.getDetailExam(+examId, {
+                payload: {
+                    student_id: userInfo?.user_id,
+                }
+            });
             if (response.data) {
                 setExam(response.data.data);
-                setTimeLeft(response.data.data.duration * 60);
+                setTimeLeft(response.data?.data?.duration * 60);
             }
         } catch (error: any) {
             toast.error('Failed to load exam', {
@@ -56,7 +60,7 @@ const TakeExamPage: FC = () => {
 
     useEffect(() => {
         fetchExam();
-    }, [id]);
+    }, [examId]);
 
     useEffect(() => {
         if (timeLeft > 0) {
@@ -86,7 +90,7 @@ const TakeExamPage: FC = () => {
 
             const response = await ExamApi.submitExam({
                 payload: {
-                    exam_id: +id,
+                    exam_id: +examId,
                     student_id: userInfo?.user_id,
                     answers: formattedAnswers
                 }
@@ -166,7 +170,7 @@ const TakeExamPage: FC = () => {
                             <Card key={question.question_id}>
                                 <CardHeader>
                                     <CardTitle className="flex justify-between items-center">
-                                        {question.question}
+                                        <p className="text-xl">{question.question}</p>
                                         {completedQuestions.has(question.question_id) && (
                                             <Check className="text-green-500" />
                                         )}

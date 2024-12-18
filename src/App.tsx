@@ -64,7 +64,19 @@ function App() {
                                                 {childRoute.element}
                                             </PrivateRoute>
                                         } 
-                                    />
+                                    >
+                                        {childRoute.children && childRoute.children.map((nestedChildRoute) => (
+                                            <Route 
+                                                key={`${route.path}-${childRoute.path}-${nestedChildRoute.path}`} 
+                                                path={nestedChildRoute.path}
+                                                element={
+                                                    <PrivateRoute allowedRoles={nestedChildRoute.allowedRoles}>
+                                                        {nestedChildRoute.element}
+                                                    </PrivateRoute>
+                                                } 
+                                            />
+                                        ))}
+                                    </Route>
                                 ))}
                             </Route>
                         );

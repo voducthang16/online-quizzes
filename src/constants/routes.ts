@@ -10,9 +10,9 @@ export const ROUTES = {
     UNAUTHORIZED: 'unauthorized',
     NOT_FOUND: '*',
     CLASS_ROUTE: {
-        STUDENT: ':id',
-    },
-    EXAM_ROUTE: {
-        TAKE: 'take/:id',
+        DETAIL: ':id',
+        TAKE_EXAM: 'take-exam/:examId',
+        VIEW_RESULT: 'view-result/:examId',
+        VIEW_DETAIL: 'view-detail/:examId',
     },
 };

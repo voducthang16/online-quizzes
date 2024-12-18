@@ -4,6 +4,7 @@ import { DataTable } from "@/components/data-table";
 import { BankForm } from "./bank-form";
 import { DeleteBankDialog } from "./bank-delete";
 import { formatDateByTimezone } from "@/utils";
+import { ViewQuestions } from "./view-questions";
 
 interface BankListProps {
     banks: BankModel[];
@@ -56,6 +57,7 @@ export const BankList = (props: BankListProps) => {
                 const bank = row.original;
                 return (
                     <div className="w-full flex justify-end gap-2">
+                        <ViewQuestions bank={bank} />
                         <BankForm bank={bank} onSubmit={onSubmit}/>
                         <DeleteBankDialog bank={bank} onDelete={onDelete} />
                     </div>

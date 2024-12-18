@@ -16,7 +16,8 @@ import {
 import { ExamPage } from '@/pages/exam';
 import ClassDetailPage from '@/pages/share/class-detail';
 import TakeExamPage from '@/pages/share/take-exam';
-import { RoleRedirect } from './role-redirect';
+import ViewResultPage from '@/pages/share/view-result';
+import TeacherExamDetail from '@/pages/share/teacher-view-exam';
 
 export interface RouteConfig {
     path: string;
@@ -67,12 +68,32 @@ export const routes: RouteConfig[] = [
         layout: <MainLayout />,
         children: [
             {
-                path: ROUTES.CLASS_ROUTE.STUDENT,
+                path: ROUTES.CLASS_ROUTE.DETAIL,
                 element: <ClassDetailPage />,
                 title: 'Class Detail',
                 icon: Users,
                 allowedRoles: [ROLE.TEACHER, ROLE.STUDENT],
-            }
+                children: [
+                    {
+                        path: ROUTES.CLASS_ROUTE.TAKE_EXAM,
+                        title: 'Take Exam',
+                        element: <TakeExamPage />,
+                        allowedRoles: [ROLE.STUDENT],
+                    },
+                    {
+                        path: ROUTES.CLASS_ROUTE.VIEW_RESULT,
+                        title: 'Exam Result',
+                        element: <ViewResultPage />,
+                        allowedRoles: [ROLE.STUDENT],
+                    },
+                    {
+                        path: ROUTES.CLASS_ROUTE.VIEW_DETAIL,
+                        title: 'Exam Detail',
+                        element: <TeacherExamDetail />,
+                        allowedRoles: [ROLE.TEACHER],
+                    },
+                ]
+            },
         ]
     },
     {
@@ -86,26 +107,12 @@ export const routes: RouteConfig[] = [
     },
     {
         path: ROUTES.EXAM,
-        element: <>
-            <RoleRedirect 
-                restrictedRoles={[ROLE.STUDENT]} 
-                redirectPath="/class"
-            >
-                <ExamPage />
-            </RoleRedirect>
-        </>,
+        element: <ExamPage />,
         title: 'Exam',
         icon: Vote,
-        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
+        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
         isSidebar: true,
         layout: <MainLayout />,
-        children: [
-            {
-                path: ROUTES.EXAM_ROUTE.TAKE,
-                element: <TakeExamPage />,
-                allowedRoles: [ROLE.STUDENT],
-            }
-        ]
     },
     {
         path: ROUTES.QUESTION,
