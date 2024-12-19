@@ -22,7 +22,7 @@ interface AnswerOption {
 const questionFormSchema = z.object({
     question: z.string()
         .min(5, "Question content must be at least 5 characters long.")
-        .regex(/^[a-zA-Z\s]*$/, {
+        .regex(/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]*$/, {
             message: "Question can only contain letters and spaces"
         })
         .trim(),
@@ -30,7 +30,7 @@ const questionFormSchema = z.object({
     correct_answer: z.enum(['A', 'B', 'C', 'D'], { 
         errorMap: () => ({ message: "Must select correct answer" }) 
     }),
-})
+});
 
 export type QuestionFormValues = z.infer<typeof questionFormSchema>;
 

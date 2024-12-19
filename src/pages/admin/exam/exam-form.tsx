@@ -16,7 +16,7 @@ import { useUserStore } from '@/stores';
 const examFormSchema = z.object({
     exam_name: z.string()
         .min(3, { message: "Exam name must be at least 3 characters." })
-        .regex(/^[a-zA-Z\s]*$/, {
+        .regex(/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]*$/, {
             message: "Exam name can only contain letters and spaces"
         })
         .trim(),
