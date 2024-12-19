@@ -7,3 +7,6 @@ export * from "./user";
 export * from "./class";
 export * from "./subject";
 export * from "./question";
+export * from "./exam";
+export * from "./share";
+export * from "./setting";

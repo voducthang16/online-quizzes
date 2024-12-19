@@ -1,28 +1,54 @@
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table as TableCpn, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable, Table } from "@tanstack/react-table";
+import { useState } from "react";
+import { Input } from "../ui/input";
 
 interface DataTableProps<TData, TValue> {
     data: TData[];
     columns: ColumnDef<TData, TValue>[];
+    filterComponent?: (table: Table<TData>) => React.ReactNode;
+    searchPlaceholder?: string;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    filterComponent,
+    searchPlaceholder = "Search...",
 }: DataTableProps<TData, TValue>) {
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [globalFilter, setGlobalFilter] = useState("");
+
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: "includesString",
+        state: {
+            columnFilters,
+            globalFilter,
+        },
     });
 
     return (
         <div className="w-full overflow-hidden">
+            <div className="flex items-center justify-between py-4">
+                <Input
+                    placeholder={searchPlaceholder}
+                    value={globalFilter ?? ""}
+                    onChange={(event) => setGlobalFilter(event.target.value)}
+                    className="max-w-sm ml-0.5"
+                />
+                {filterComponent && filterComponent(table)}
+            </div>
             <div className="rounded-md border">
-                <Table>
+                <TableCpn>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow className=" overflow-hidden" key={headerGroup.id}>
@@ -53,7 +79,7 @@ export function DataTable<TData, TValue>({
                             </TableRow>
                         )}
                     </TableBody>
-                </Table>
+                </TableCpn>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 sm:space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground"></div>

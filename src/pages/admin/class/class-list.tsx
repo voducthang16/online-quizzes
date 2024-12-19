@@ -4,6 +4,7 @@ import { DataTable } from "@/components/data-table";
 import { ClassForm } from "./class-form";
 import { DeleteClassDialog } from "./class-delete";
 import { ClassAddStudent } from "./class-add-student";
+import { formatDateByTimezone } from "@/utils";
 
 interface ClassListProps {
     classes: ClassModel[];
@@ -39,8 +40,7 @@ export const ClassList = (props: ClassListProps) => {
             accessorKey: "updated_at",
             header: "Updated At",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("updated_at"))
-                return <span>{date.toLocaleDateString()}</span>
+                return <span>{formatDateByTimezone(row.getValue("updated_at"))}</span>
             },
         },
         {

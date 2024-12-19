@@ -14,6 +14,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useUserStore } from '@/stores';
 
 interface ExamAddQuestionsProps {
     examData: ExamModel;
@@ -33,6 +34,7 @@ export const ExamAddQuestions: FC<ExamAddQuestionsProps> = ({ examData, onSubmit
         examDetail: false
     });
     const [isSaving, setIsSaving] = useState(false);
+    const { userInfo } = useUserStore();
 
     const fetchExamDetail = async () => {
         try {
@@ -63,7 +65,10 @@ export const ExamAddQuestions: FC<ExamAddQuestionsProps> = ({ examData, onSubmit
     const fetchBanks = async () => {
         try {
             setIsLoading(prev => ({ ...prev, banks: true }));
-            const response = await BankApi.getAllBanks();
+            const param = userInfo?.role === 'admin' ? {} : { teacher_id: userInfo?.user_id };
+            const response = await BankApi.getAllBanks({
+                payload: param
+            });
             if (response.data) {
                 setBanks(response.data.data);
             }

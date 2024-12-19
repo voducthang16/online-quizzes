@@ -6,3 +6,4 @@ export * from "./BankModel";
 export * from "./QuestionModel";
 export * from "./ExamModel";
 export * from "./ApiRequestModel";
+export * from "./StatisticModel";

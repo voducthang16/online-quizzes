@@ -8,4 +8,5 @@ export class BankModel extends BaseModel {
     is_public: boolean;
     created_by?: UserModel | number;
     questions: QuestionModel[];
+    teacher_id: number;
 }

@@ -18,9 +18,10 @@ const BankAdmin: FC<BankAdminProps> = ({ isTeacherView = false }) => {
 
     const fetchBanks = async () => {
         try {
-            const response = isTeacherView 
-                ? await BankApi.getBanksByUser(userInfo?.user_id)
-                : await BankApi.getAllBanks();
+            const param = userInfo?.role === 'admin' ? {} : { teacher_id: userInfo?.user_id };
+            const response = await BankApi.getAllBanks({
+                payload: param
+            });
             if (response.data) {
                 setBanks(response.data.data);
             }

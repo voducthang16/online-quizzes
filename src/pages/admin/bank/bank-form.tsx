@@ -14,7 +14,12 @@ import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
 
 const bankFormSchema = z.object({
-    bank_name: z.string().min(2, "Bank name must be at least 2 characters long."),
+    bank_name: z.string()
+        .min(2, "Bank name must be at least 2 characters long.")
+        .regex(/^[a-zA-Z\s]*$/, {
+            message: "Bank name can only contain letters and spaces"
+        })
+        .trim(),
     is_public: z.boolean()
 });
 

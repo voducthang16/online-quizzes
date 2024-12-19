@@ -13,7 +13,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const classFormSchema = z.object({
-    class_name: z.string().min(2, "Class name must be at least 2 characters long."),
+    class_name: z.string()
+        .min(2, "Class name must be at least 2 characters long.")
+        .regex(/^[a-zA-Z\s]*$/, {
+            message: "Class name can only contain letters and spaces"
+        })
+        .trim(),
     subject_id: z.number().int().min(1, "Subject is required"),
     teacher_id: z.number().int().min(1, "Teacher is required"),
 });
@@ -111,6 +116,13 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
             if (classData) {
                 fetchClassDetail();
             }
+        } else {
+            form.reset({
+                class_name: undefined,
+                subject_id: undefined,
+                teacher_id: undefined,
+            });
+            form.clearErrors();
         }
     }, [isDialogOpen, classData]);
 

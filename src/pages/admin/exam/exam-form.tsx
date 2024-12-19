@@ -14,7 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUserStore } from '@/stores';
 
 const examFormSchema = z.object({
-    exam_name: z.string().min(3, { message: "Name must be at least 3 characters." }),
+    exam_name: z.string()
+        .min(3, { message: "Exam name must be at least 3 characters." })
+        .regex(/^[a-zA-Z\s]*$/, {
+            message: "Exam name can only contain letters and spaces"
+        })
+        .trim(),
     subject_id: z.number().min(1, "Subject is required"),
     class_id: z.number().min(1, "Class is required"),
     duration: z.number().min(1, "Duration must be at least 1 minute"),

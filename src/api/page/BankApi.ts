@@ -11,9 +11,10 @@ export const BankApi = {
         });
     },
 
-    getAllBanks() {
+    getAllBanks(request?: Partial<ApiRequestModel<BankModel>>) {
         return BaseService.get<BankModel[]>({
             url: API.QUESTION_BANK.GET_ALL,
+            ...request,
         });
     },
 

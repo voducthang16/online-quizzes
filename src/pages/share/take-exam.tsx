@@ -20,7 +20,7 @@ import {
     AlertDialogTitle, 
 } from '@/components/ui/alert-dialog';
 
-const TakeExamPage: FC = () => {
+export const TakeExamPage: FC = () => {
     const { examId } = useParams();
     const navigate = useNavigate();
     const [exam, setExam] = useState<ExamModel | null>(null);
@@ -270,5 +270,3 @@ const TakeExamPage: FC = () => {
         </div>
     );
 };
-
-export default TakeExamPage;

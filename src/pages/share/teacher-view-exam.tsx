@@ -9,7 +9,7 @@ import { LoadingSpinner } from '@/components';
 import { Clock, Users, CheckCircle2, XCircle } from 'lucide-react';
 import { formatDateByTimezone, formatScore } from '@/utils';
 
-const TeacherExamDetail: FC = () => {
+export const TeacherExamDetail: FC = () => {
     const { examId } = useParams();
     const navigate = useNavigate();
     const { userInfo } = useUserStore();
@@ -59,9 +59,6 @@ const TeacherExamDetail: FC = () => {
                 <div className="flex justify-between items-start">
                     <div>
                         <h1 className="text-3xl font-bold">{exam.exam_name}</h1>
-                        <p className="text-muted-foreground mt-2">
-                            {exam.classes?.class_name} - {exam.subject?.subject_name}
-                        </p>
                     </div>
                     <div className="flex items-center gap-2 text-muted-foreground">
                         <Clock className="h-5 w-5" />
@@ -98,7 +95,7 @@ const TeacherExamDetail: FC = () => {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <XCircle className="h-5 w-5 text-red-500" />
-                                Pending
+                                New
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -137,7 +134,7 @@ const TeacherExamDetail: FC = () => {
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                                    Pending
+                                                    New
                                                 </span>
                                             )}
                                         </div>

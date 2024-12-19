@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { MainLayout } from '@/layouts';
 import { ROLE, ROUTES } from '@/constants';
-import { BookHeart, FileQuestion, Landmark, LayoutDashboard, School, Users, Vote } from 'lucide-react';
+import { BookHeart, FileQuestion, Landmark, LayoutDashboard, School, UserCog, Users, Vote } from 'lucide-react';
 import {
     DashboardPage,
     UserPage,
@@ -12,19 +12,21 @@ import {
     BankPage,
     SubjectPage,
     QuestionPage,
+    ClassDetailPage,
+    TakeExamPage,
+    ViewResultPage,
+    TeacherExamDetail,
+    ExamPage,
+    SettingsPage,
 } from '@/pages';
-import { ExamPage } from '@/pages/exam';
-import ClassDetailPage from '@/pages/share/class-detail';
-import TakeExamPage from '@/pages/share/take-exam';
-import ViewResultPage from '@/pages/share/view-result';
-import TeacherExamDetail from '@/pages/share/teacher-view-exam';
+import { RoleRedirect } from './role-redirect';
 
 export interface RouteConfig {
     path: string;
     element: ReactNode;
     title?: string;
     icon?: any;
-    allowedRoles: ROLE[];
+    allowedRoles?: ROLE[];
     isSidebar?: boolean;
     layout?: ReactNode;
     children?: RouteConfig[];
@@ -33,7 +35,9 @@ export interface RouteConfig {
 export const routes: RouteConfig[] = [
     {
         path: ROUTES.DASHBOARD,
-        element: <DashboardPage />,
+        element: <RoleRedirect redirectPath={ROUTES.CLASS} restrictedRoles={[ROLE.TEACHER, ROLE.STUDENT]}>
+            <DashboardPage />
+        </RoleRedirect>,
         title: 'Dashboard',
         icon: LayoutDashboard,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
@@ -120,6 +124,15 @@ export const routes: RouteConfig[] = [
         title: 'Question',
         icon: FileQuestion,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
+        isSidebar: true,
+        layout: <MainLayout />,
+    },
+    {
+        path: ROUTES.SETTING,
+        element: <SettingsPage />,
+        title: 'Setting',
+        icon: UserCog,
+        allowedRoles: [ROLE.ADMIN, ROLE.TEACHER, ROLE.STUDENT],
         isSidebar: true,
         layout: <MainLayout />,
     },

@@ -53,4 +53,7 @@ export const API = {
     RESULT: {
         SUBMIT: 'results',
     },
+    STATISTIC: {
+        GET_STATISTIC: 'statistics',
+    },
 }

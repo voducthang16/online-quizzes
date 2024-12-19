@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ImportDialog } from './import-dialog';
+import { useUserStore } from '@/stores';
 
 interface AnswerOption {
     key: 'A' | 'B' | 'C' | 'D';
@@ -19,12 +20,17 @@ interface AnswerOption {
 }
 
 const questionFormSchema = z.object({
-    question: z.string().min(5, "Question content must be at least 5 characters long."),
+    question: z.string()
+        .min(5, "Question content must be at least 5 characters long.")
+        .regex(/^[a-zA-Z\s]*$/, {
+            message: "Question can only contain letters and spaces"
+        })
+        .trim(),
     question_bank_id: z.number().min(1, "Bank is required"),
     correct_answer: z.enum(['A', 'B', 'C', 'D'], { 
         errorMap: () => ({ message: "Must select correct answer" }) 
     }),
-});
+})
 
 export type QuestionFormValues = z.infer<typeof questionFormSchema>;
 
@@ -54,10 +60,15 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isImportOpen, setIsImportOpen] = useState(false);
 
+    const { userInfo } = useUserStore();
+
     const fetchBanks = async () => {
         try {
             setIsLoading(true);
-            const response = await BankApi.getAllBanks();
+            const param = userInfo?.role === 'admin' ? {} : { teacher_id: userInfo?.user_id };
+            const response = await BankApi.getAllBanks({
+                payload: param
+            });
             if (response.data) {
                 setBanks(response.data.data);
             }
@@ -91,16 +102,45 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
 
     const handleSubmit = async (data: QuestionFormValues) => {
         if (isSubmitting) return;
-        setIsSubmitting(true);
-
+        
         try {
-            const validAnswers = answers.filter(a => a.value.trim() !== '');
-            const answersJson = JSON.stringify(validAnswers);
+            setIsSubmitting(true);
+            const answersJson = JSON.stringify(answers);
+            const parsedAnswers = JSON.parse(answersJson);
+
+            if (!Array.isArray(parsedAnswers)) {
+                toast.error('Validation Error', {
+                    description: 'Invalid answer format.'
+                });
+                return;
+            }
+
+            const validAnswers = parsedAnswers.filter((ans: AnswerOption) => 
+                ans.value && ans.value.trim() !== ''
+            );
+
+            if (validAnswers.length < 4) {
+                toast.error('Validation Error', {
+                    description: 'Please provide at least four answer options.'
+                });
+                return;
+            }
+
+            const selectedAnswerValue = validAnswers.find(
+                (ans: AnswerOption) => ans.key === data.correct_answer
+            );
+
+            if (!selectedAnswerValue) {
+                toast.error('Validation Error', {
+                    description: 'Selected answer cannot be empty.'
+                });
+                return;
+            }
 
             const submitAction = question
                 ? QuestionListApi.updateQuestion({
                     payload: {
-                        question_bank_id: question.question_bank_id,
+                        question_id: question.question_id,
                         ...data,
                         answer: answersJson
                     }

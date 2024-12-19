@@ -13,7 +13,7 @@ import {
 import { NavLink, useLocation, useNavigate } from "react-router";
 import { useUserStore } from "@/stores";
 import { routes } from "@/routes";
-import { ROLE } from "@/constants";
+import { ROLE, ROUTES } from "@/constants";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog, ConfirmDialogType } from "@/components";
@@ -31,7 +31,7 @@ export const AppSidebar = () => {
 
     const { userInfo, logout } = useUserStore();
 
-    const filteredRoutes = routes.filter(route => route.isSidebar && route.allowedRoles.includes(userInfo?.role as ROLE));
+    const filteredRoutes = routes?.filter(route => route?.isSidebar && route?.allowedRoles?.includes(userInfo?.role as ROLE));
 
     const handleLogout = () => {
         setIsDialogOpen(false);
@@ -51,22 +51,27 @@ export const AppSidebar = () => {
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {filteredRoutes.map((item) => (
-                                <SidebarMenuItem key={item.path}>
-                                    <SidebarMenuButton asChild>
-                                        <NavLink
-                                            to={item.path}
-                                            className={cn(
-                                                "flex items-center p-2 rounded transition-colors duration-200",
-                                                isActiveRoute(item.path) ? "bg-sidebar-active" : ""
-                                            )}
-                                        >
-                                            {item.icon && <item.icon />}
-                                            <span>{item.title}</span>
-                                        </NavLink>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                            {filteredRoutes.map((item) => {
+                                if (item.path === ROUTES.DASHBOARD && userInfo.role !== ROLE.ADMIN) {
+                                    return null;
+                                }
+                                return (
+                                    <SidebarMenuItem key={item.path}>
+                                        <SidebarMenuButton asChild>
+                                            <NavLink
+                                                to={item.path}
+                                                className={cn(
+                                                    "flex items-center p-2 rounded transition-colors duration-200",
+                                                    isActiveRoute(item.path) ? "bg-sidebar-active" : ""
+                                                )}
+                                            >
+                                                {item.icon && <item.icon />}
+                                                <span>{item.title}</span>
+                                            </NavLink>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                )
+                            })}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

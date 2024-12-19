@@ -44,13 +44,6 @@ export const BankList = (props: BankListProps) => {
             },
         },
         {
-            accessorKey: "updated_at",
-            header: "Updated At",
-            cell: ({ row }) => {
-                return <span>{formatDateByTimezone(row.getValue("updated_at"))}</span>
-            },
-        },
-        {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {

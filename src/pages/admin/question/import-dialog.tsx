@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useUserStore } from "@/stores";
 
 export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
     isOpen: boolean;
@@ -19,11 +20,15 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { userInfo } = useUserStore();
 
     const fetchBanks = async () => {
         try {
             setIsLoading(true);
-            const response = await BankApi.getAllBanks();
+            const param = userInfo?.role === 'admin' ? {} : { teacher_id: userInfo?.user_id };
+            const response = await BankApi.getAllBanks({
+                payload: param
+            });
             if (response.data) {
                 setBanks(response.data.data);
             }

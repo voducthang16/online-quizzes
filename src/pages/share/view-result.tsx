@@ -9,7 +9,7 @@ import { Check, X, Clock, GraduationCap } from "lucide-react";
 import { useUserStore } from "@/stores";
 import { formatDateByTimezone, formatScore } from "@/utils";
 
-const ViewResultPage: FC = () => {
+export const ViewResultPage: FC = () => {
     const { examId } = useParams();
     const navigate = useNavigate();
     const [exam, setExam] = useState<ExamModel | null>(null);
@@ -167,5 +167,3 @@ const ViewResultPage: FC = () => {
         </div>
     );
 };
-
-export default ViewResultPage;

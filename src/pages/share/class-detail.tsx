@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { ROLE } from "@/constants";
 import { useUserStore } from "@/stores";
-import { ConfirmDialog, LoadingSpinner } from "@/components";
+import { LoadingSpinner } from "@/components";
 import { formatDateByTimezone } from "@/utils";
 import { ClassApi, ExamApi } from "@/api/page";
 import { Button } from "@/components/ui/button";
@@ -12,19 +12,17 @@ import { Users, Clock, GraduationCap, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const ClassDetailPage: FC = () => {
+export const ClassDetailPage: FC = () => {
     const { id, examId } = useParams();
     const { userInfo } = useUserStore();
     const [classDetail, setClassDetail] = useState<ClassModel | null>(null);
     const [exams, setExams] = useState<ExamModel[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState({
         class: true,
         exams: false,
     });
 
     const navigate = useNavigate();
-    console.log(id, examId);
 
     const fetchClassDetail = async () => {
         if (!id) return;
@@ -246,5 +244,3 @@ const ClassDetailPage: FC = () => {
         </>
     );
 };
-
-export default ClassDetailPage;

@@ -8,6 +8,8 @@ export const ROUTES = {
     QUESTION: 'question',
     LOGIN: 'login',
     UNAUTHORIZED: 'unauthorized',
+    SETTING: 'setting',
+    SETUP: 'setup',
     NOT_FOUND: '*',
     CLASS_ROUTE: {
         DETAIL: ':id',
