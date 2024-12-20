@@ -22,9 +22,6 @@ interface AnswerOption {
 const questionFormSchema = z.object({
     question: z.string()
         .min(5, "Question content must be at least 5 characters long.")
-        .regex(/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]*$/, {
-            message: "Question can only contain letters and spaces"
-        })
         .trim(),
     question_bank_id: z.number().min(1, "Bank is required"),
     correct_answer: z.enum(['A', 'B', 'C', 'D'], { 

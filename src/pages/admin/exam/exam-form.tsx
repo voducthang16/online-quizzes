@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { ExamApi, SubjectApi, ClassApi } from '@/api/page';
-import { ExamModel, SubjectModel, ClassModel, UserModel } from "@/models";
+import { ExamModel, SubjectModel, ClassModel } from "@/models";
 import { useForm } from 'react-hook-form';
-import { Pencil, Plus } from 'lucide-react';
+import { Pencil, Plus, Loader2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FC, useEffect, useState } from 'react';
@@ -45,6 +45,17 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
         examDetail: false
     });
 
+    const form = useForm<ExamFormValues>({
+        resolver: zodResolver(examFormSchema),
+        // Initialize with empty values, we'll set them after data is loaded
+        defaultValues: {
+            exam_name: '',
+            subject_id: undefined,
+            class_id: undefined,
+            duration: 30,
+        }
+    });
+
     const fetchExamDetail = async () => {
         if (!exam?.exam_id) return;
         
@@ -52,13 +63,15 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
             setIsLoading(prev => ({ ...prev, examDetail: true }));
             const response = await ExamApi.getDetailExam(exam.exam_id);
             if (response.data) {
-                setExamDetail(response.data.data);
+                const data = response.data.data;
+                setExamDetail(data);
+                // Update form values after data is loaded
                 form.reset({
-                    exam_name: response.data.data.exam_name,
-                    subject_id: response.data.data.subject_id,
-                    class_id: response.data.data.class_id,
-                    duration: response.data.data.duration,
-                });
+                    exam_name: data.exam_name,
+                    subject_id: data.subject_id,
+                    class_id: data.class_id,
+                    duration: data.duration,
+                }, { keepDefaultValues: true });
             }
         } catch (error: any) {
             toast.error('Failed to load exam details', {
@@ -77,8 +90,12 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                 ClassApi.getAllClasses()
             ]);
 
-            if (subjectsResponse.data) setSubjects(subjectsResponse.data.data);
-            if (classesResponse.data) setClasses(classesResponse.data.data);
+            if (subjectsResponse.data?.data) {
+                setSubjects(subjectsResponse.data.data);
+            }
+            if (classesResponse.data?.data) {
+                setClasses(classesResponse.data.data);
+            }
         } catch (error: any) {
             toast.error('Failed to load data', {
                 description: error?.message || 'Please try again'
@@ -88,37 +105,26 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
         }
     };
 
+    // Handle dialog open/close and data fetching
     useEffect(() => {
         if (isDialogOpen) {
-            Promise.all([
-                fetchData(),
-                exam && fetchExamDetail()
-            ]);
-        } else {
+            // Reset form when opening
             form.reset({
                 exam_name: '',
                 subject_id: undefined,
                 class_id: undefined,
                 duration: 30,
             });
-            form.clearErrors();
+            
+            // Fetch necessary data
+            fetchData();
+            
+            // If editing, fetch exam details
+            if (exam) {
+                fetchExamDetail();
+            }
         }
-    }, [isDialogOpen, exam]);
-
-    const form = useForm<ExamFormValues>({
-        resolver: zodResolver(examFormSchema),
-        defaultValues: exam ? {
-            exam_name: exam.exam_name,
-            subject_id: exam.subject_id,
-            class_id: exam.class_id,
-            duration: exam.duration,
-        } : {
-            exam_name: '',
-            subject_id: undefined,
-            class_id: undefined,
-            duration: 30,
-        }
-    });
+    }, [isDialogOpen]);
 
     const handleSubmit = async (data: ExamFormValues) => {
         if (isSubmitting) return;
@@ -134,7 +140,13 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                         questions: examDetail?.questions || []
                     }
                 })
-                : ExamApi.createExam({ payload: { ...data, created_by: userInfo.user_id, questions: [] } });
+                : ExamApi.createExam({ 
+                    payload: { 
+                        ...data, 
+                        created_by: userInfo.user_id, 
+                        questions: [] 
+                    } 
+                });
 
             const response = await submitAction;
 
@@ -154,6 +166,8 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
             setIsSubmitting(false);
         }
     };
+
+    const isLoadingInitialData = isLoading.subjects || isLoading.classes || (exam && isLoading.examDetail);
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -178,97 +192,138 @@ export const ExamForm: FC<ExamFormProps> = ({ exam, onSubmit }) => {
                         {exam ? 'Edit Exam' : 'Create New Exam'}
                     </DialogTitle>
                 </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="exam_name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Exam Name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter exam name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="subject_id"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Subject</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value as any}>
+
+                {isLoadingInitialData ? (
+                    <div className="flex items-center justify-center p-4">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
+                ) : (
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="exam_name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Exam Name</FormLabel>
                                         <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={"Select a subject"} />
-                                            </SelectTrigger>
+                                            <Input 
+                                                placeholder="Enter exam name" 
+                                                {...field}
+                                                disabled={isSubmitting}
+                                            />
                                         </FormControl>
-                                        <SelectContent>
-                                            {subjects.map((subject) => (
-                                                <SelectItem key={subject.subject_id} value={subject.subject_id as any}>
-                                                    {subject.subject_name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="class_id"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Class</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(+value)} value={field.value as any}>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="subject_id"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Subject</FormLabel>
+                                        <Select 
+                                            onValueChange={(v) => field.onChange(Number(v))} 
+                                            value={field.value?.toString()}
+                                            disabled={isLoading.subjects || isSubmitting}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a subject" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {subjects.map((subject) => (
+                                                    <SelectItem 
+                                                        key={subject.subject_id} 
+                                                        value={subject.subject_id.toString()}
+                                                    >
+                                                        {subject.subject_name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="class_id"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Class</FormLabel>
+                                        <Select 
+                                            onValueChange={(v) => field.onChange(Number(v))} 
+                                            value={field.value?.toString()}
+                                            disabled={isLoading.classes || isSubmitting}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a class" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {classes.map((cls) => (
+                                                    <SelectItem 
+                                                        key={cls.class_id} 
+                                                        value={cls.class_id.toString()}
+                                                    >
+                                                        {cls.class_name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="duration"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Duration (minutes)</FormLabel>
                                         <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={"Select a class"} />
-                                            </SelectTrigger>
+                                            <Input 
+                                                type="number" 
+                                                min={1} 
+                                                {...field} 
+                                                onChange={e => field.onChange(+e.target.value)}
+                                                disabled={isSubmitting}
+                                            />
                                         </FormControl>
-                                        <SelectContent>
-                                            {classes.map((cls) => (
-                                                <SelectItem key={cls.class_id} value={cls.class_id as any}>
-                                                    {cls.class_name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="duration"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Duration (minutes)</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" min={1} {...field} onChange={e => field.onChange(+e.target.value)} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <div className="flex justify-end space-x-2">
-                            <Button 
-                                type="button" 
-                                variant="outline" 
-                                onClick={() => setIsDialogOpen(false)}
-                                disabled={isSubmitting}
-                            >
-                                Cancel
-                            </Button>
-                            <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? 'Saving...' : (exam ? 'Update Exam' : 'Create Exam')}
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="flex justify-end space-x-2">
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={() => setIsDialogOpen(false)}
+                                    disabled={isSubmitting}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button 
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            {exam ? 'Updating...' : 'Creating...'}
+                                        </>
+                                    ) : (
+                                        exam ? 'Update Exam' : 'Create Exam'
+                                    )}
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                )}
             </DialogContent>
         </Dialog>
     );

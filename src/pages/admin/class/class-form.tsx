@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { Pencil, Plus } from 'lucide-react';
+import { Pencil, Plus, Loader2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FC, useEffect, useState } from 'react';
@@ -44,11 +44,8 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
 
     const form = useForm<ClassFormValues>({
         resolver: zodResolver(classFormSchema),
-        defaultValues: classData ? {
-            class_name: classData.class_name,
-            subject_id: classData.subject_id,
-            teacher_id: classData.teacher_id,
-        } : {
+        // Don't set default values here, we'll set them after data is loaded
+        defaultValues: {
             class_name: '',
             subject_id: undefined,
             teacher_id: undefined,
@@ -62,12 +59,14 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
             setIsLoading(prev => ({ ...prev, classDetail: true }));
             const response = await ClassApi.getDetail(classData.class_id);
             if (response.data) {
-                setClassDetail(response.data.data);
+                const data = response.data.data;
+                setClassDetail(data);
+                // Update form values after data is loaded
                 form.reset({
-                    class_name: response.data.data.class_name,
-                    subject_id: response.data.data.subject_id,
-                    teacher_id: response.data.data.teacher_id,
-                });
+                    class_name: data.class_name,
+                    subject_id: data.subject_id,
+                    teacher_id: data.teacher_id,
+                }, { keepDefaultValues: true });
             }
         } catch (error: any) {
             toast.error('Failed to load class details', {
@@ -110,21 +109,25 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
         }
     };
 
+    // Handle dialog open/close
     useEffect(() => {
         if (isDialogOpen) {
-            fetchData();
-            if (classData) {
-                fetchClassDetail();
-            }
-        } else {
+            // Reset form when opening
             form.reset({
-                class_name: undefined,
+                class_name: '',
                 subject_id: undefined,
                 teacher_id: undefined,
             });
-            form.clearErrors();
+            
+            // Fetch necessary data
+            fetchData();
+            
+            // If editing, fetch class details
+            if (classData) {
+                fetchClassDetail();
+            }
         }
-    }, [isDialogOpen, classData]);
+    }, [isDialogOpen]);
 
     const handleSubmit = async (data: ClassFormValues) => {
         if (isSubmitting) return;
@@ -136,7 +139,7 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                 ? ClassApi.updateClass({
                     payload: {
                         class_id: classData.class_id,
-                        students: classDetail.students.map(s => ({ student_id: s.user_id })),
+                        students: classDetail?.students?.map(s => ({ student_id: s.user_id })) || [],
                         ...data
                     }
                 })
@@ -161,6 +164,8 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
         }
     };
 
+    const isLoadingInitialData = isLoading.teachers || isLoading.subjects || (classData && isLoading.classDetail);
+
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -184,85 +189,115 @@ export const ClassForm: FC<ClassFormProps> = ({ class: classData, onSubmit }) =>
                         {classData ? 'Edit Class' : 'Create New Class'}
                     </DialogTitle>
                 </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="class_name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Class Name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter class name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="subject_id"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Subject</FormLabel>
-                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value as any}>
+                
+                {isLoadingInitialData ? (
+                    <div className="flex items-center justify-center p-4">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
+                ) : (
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="class_name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Class Name</FormLabel>
                                         <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue
-                                                    placeholder="Select a subject"
-                                                />
-                                            </SelectTrigger>
+                                            <Input placeholder="Enter class name" {...field} />
                                         </FormControl>
-                                        <SelectContent>
-                                            {subjects.map((subject) => (
-                                                <SelectItem key={subject.subject_id} value={subject.subject_id as any}>
-                                                    {subject.subject_name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="teacher_id"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Teacher</FormLabel>
-                                    <Select onValueChange={(v) => field.onChange(+v)} value={field.value as any}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={isLoading.teachers ? "Loading..." : "Select a teacher"} />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {teachers.map((teacher) => (
-                                                <SelectItem key={teacher.user_id} value={teacher.user_id as any}>
-                                                    {teacher.full_name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <div className="flex justify-end space-x-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setIsDialogOpen(false)}
-                            >
-                                Cancel
-                            </Button>
-                            <Button type="submit">
-                                {classData ? 'Update Class' : 'Create Class'}
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="subject_id"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Subject</FormLabel>
+                                        <Select 
+                                            onValueChange={(v) => field.onChange(Number(v))} 
+                                            value={field.value?.toString()}
+                                            disabled={isLoading.subjects}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a subject" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {subjects.map((subject) => (
+                                                    <SelectItem 
+                                                        key={subject.subject_id} 
+                                                        value={subject.subject_id.toString()}
+                                                    >
+                                                        {subject.subject_name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="teacher_id"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Teacher</FormLabel>
+                                        <Select 
+                                            onValueChange={(v) => field.onChange(Number(v))} 
+                                            value={field.value?.toString()}
+                                            disabled={isLoading.teachers}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a teacher" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {teachers.map((teacher) => (
+                                                    <SelectItem 
+                                                        key={teacher.user_id} 
+                                                        value={teacher.user_id.toString()}
+                                                    >
+                                                        {teacher.full_name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="flex justify-end space-x-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsDialogOpen(false)}
+                                    disabled={isSubmitting}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button 
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            {classData ? 'Updating...' : 'Creating...'}
+                                        </>
+                                    ) : (
+                                        classData ? 'Update Class' : 'Create Class'
+                                    )}
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                )}
             </DialogContent>
         </Dialog>
     );
