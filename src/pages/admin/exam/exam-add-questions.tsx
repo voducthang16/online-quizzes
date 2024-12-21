@@ -201,9 +201,6 @@ export const ExamAddQuestions: FC<ExamAddQuestionsProps> = ({ examData, onSubmit
                         </div>
                         {selectedBank && (
                             <div>
-                                <h3 className="text-sm font-medium mb-2">
-                                    Available Questions ({bankQuestions.length - selectedQuestions.length})
-                                </h3>
                                 <ScrollArea className="h-[200px] rounded-md border p-4">
                                     {isLoading.questions ? (
                                         <div className="flex justify-center items-center h-full">

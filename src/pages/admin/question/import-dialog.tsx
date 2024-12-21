@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores";
+import { Download } from "lucide-react";
 
 export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
     isOpen: boolean;
@@ -50,19 +51,33 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            // Validate file type
-            const allowedTypes = ['.csv', '.xlsx', '.xls'];
-            const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+            const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
-            if (!allowedTypes.includes(fileExtension)) {
+            if (fileExtension !== 'xlsx') {
                 toast.error('Invalid file type', {
-                    description: 'Please upload a CSV or Excel file'
+                    description: 'Please upload an Excel (.xlsx) file'
                 });
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
                 return;
             }
 
             setSelectedFile(file);
         }
+    };
+
+    const handleDownloadExample = () => {
+        const link = document.createElement('a');
+        link.href = '/questions_template.xlsx';
+        link.download = 'questions_template.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success('Template downloaded', {
+            description: 'Use this template to format your questions'
+        });
     };
 
     const handleUpload = async () => {
@@ -86,7 +101,7 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
 
                 try {
                     const response = await QuestionListApi.uploadQuestions({
-                        user_id: 6, // Replace with actual user ID from authentication
+                        user_id: userInfo?.user_id,
                         question_bank_id: +selectedBank,
                         question: base64File
                     });
@@ -95,13 +110,8 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                         description: `${selectedFile.name} has been processed`
                     });
 
-                    // Call onSubmit if provided
                     onSubmit?.();
-
-                    // Reset form
-                    setSelectedFile(null);
-                    if (fileInputRef.current) fileInputRef.current.value = '';
-                    onClose();
+                    handleClose();
                 } catch (uploadError: any) {
                     toast.error('Upload failed', {
                         description: uploadError?.response?.data?.message ||
@@ -119,8 +129,17 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
         }
     };
 
+    const handleClose = () => {
+        setSelectedFile(null);
+        setSelectedBank(undefined);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        onClose();
+    };
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={isOpen} onOpenChange={handleClose}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Import Questions</DialogTitle>
@@ -139,7 +158,7 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                                 {banks.map((bank) => (
                                     <SelectItem
                                         key={bank.question_bank_id}
-                                        value={bank.question_bank_id as any}
+                                        value={bank.question_bank_id.toString()}
                                     >
                                         {bank.bank_name}
                                     </SelectItem>
@@ -148,7 +167,18 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Upload File</Label>
+                        <div className="flex justify-between items-center">
+                            <Label>Upload File</Label>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleDownloadExample}
+                                className="h-8"
+                            >
+                                <Download className="h-4 w-4 mr-2" />
+                                Download Template
+                            </Button>
+                        </div>
                         <Input
                             type="file"
                             accept=".xlsx"
@@ -156,16 +186,20 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                             onChange={handleFileChange}
                             disabled={!selectedBank}
                         />
-                        <p className="text-sm text-muted-foreground">
-                            File must be in Excel format with columns:
-                            Question, A, B, C, D, Answer
-                        </p>
+                        <div className="text-sm text-muted-foreground space-y-1">
+                            <p>File requirements:</p>
+                            <ul className="list-disc pl-4 space-y-1">
+                                <li>Excel format (.xlsx)</li>
+                                <li>Required columns: Question, A, B, C, D, Answer</li>
+                                <li>Answer column should contain the correct option letter (A, B, C, or D)</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <DialogFooter>
                     <Button
                         variant="outline"
-                        onClick={onClose}
+                        onClick={handleClose}
                         disabled={isUploading}
                     >
                         Cancel

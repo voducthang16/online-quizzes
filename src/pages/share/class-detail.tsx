@@ -174,7 +174,7 @@ export const ClassDetailPage: FC = () => {
                                                         <CardTitle className="flex items-center justify-between">
                                                             <span>{exam.exam_name}</span>
                                                             <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                                                                {exam.duration} mins
+                                                                {exam.duration} min{exam.duration !== 1 ? "s" : ""}
                                                             </span>
                                                         </CardTitle>
                                                     </CardHeader>
@@ -184,7 +184,7 @@ export const ClassDetailPage: FC = () => {
                                                                 <FileText className="h-4 w-4 text-muted-foreground" />
                                                                 <span>
                                                                     {exam.questions?.length || 0} Question
-                                                                    {exam.questions?.length !== 1 ? "s" : ""}
+                                                                    {exam.questions?.length !== 1 && exam.questions?.length !== 0 ? "s" : ""}
                                                                 </span>
                                                             </div>
                                                             <div className="flex items-center gap-2">

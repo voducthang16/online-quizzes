@@ -39,7 +39,7 @@ interface QuestionFormProps {
 
 export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHideImport = false }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [answers, setAnswers] = useState<AnswerOption[]>(
+    const [answers, setAnswers] = useState<AnswerOption[]>(() => 
         question?.answer
             ? JSON.parse(question.answer).map((ans: any) => ({
                 key: ans.key,
@@ -56,8 +56,18 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isImportOpen, setIsImportOpen] = useState(false);
+    const [isFormReady, setIsFormReady] = useState(false);
 
     const { userInfo } = useUserStore();
+
+    const form = useForm<QuestionFormValues>({
+        resolver: zodResolver(questionFormSchema),
+        defaultValues: {
+            question: '',
+            question_bank_id: undefined,
+            correct_answer: 'A',
+        }
+    });
 
     const fetchBanks = async () => {
         try {
@@ -68,6 +78,8 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
             });
             if (response.data) {
                 setBanks(response.data.data);
+                // Only set form ready after banks are loaded
+                setIsFormReady(true);
             }
         } catch (error: any) {
             toast.error('Failed to load banks', {
@@ -78,24 +90,23 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
         }
     };
 
+    // Handle initial data loading when dialog opens
     useEffect(() => {
         if (isDialogOpen) {
             fetchBanks();
         }
     }, [isDialogOpen]);
 
-    const form = useForm<QuestionFormValues>({
-        resolver: zodResolver(questionFormSchema),
-        defaultValues: question ? {
-            question: question.question,
-            question_bank_id: question.question_bank_id,
-            correct_answer: question.correct_answer as 'A' | 'B' | 'C' | 'D',
-        } : {
-            question: '',
-            question_bank_id: undefined,
-            correct_answer: 'A',
+    // Handle form reset and initialization when question prop changes or dialog opens
+    useEffect(() => {
+        if (isDialogOpen && isFormReady) {
+            form.reset({
+                question: question?.question || '',
+                question_bank_id: question?.question_bank_id || undefined,
+                correct_answer: (question?.correct_answer as 'A' | 'B' | 'C' | 'D') || 'A',
+            });
         }
-    });
+    }, [question, isDialogOpen, isFormReady, form]);
 
     const handleSubmit = async (data: QuestionFormValues) => {
         if (isSubmitting) return;
@@ -167,13 +178,23 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
         }
     };
 
-    const handleImport = () => {
-        onSubmit();
+    const handleDialogOpenChange = (open: boolean) => {
+        setIsDialogOpen(open);
+        if (!open) {
+            setIsFormReady(false);
+            form.reset();
+            setAnswers([
+                { key: 'A', value: '' },
+                { key: 'B', value: '' },
+                { key: 'C', value: '' },
+                { key: 'D', value: '' }
+            ]);
+        }
     };
 
     return (
         <div className="flex justify-end space-x-5 items-center">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
                 <DialogTrigger asChild>
                     {question ? (
                         <Button
@@ -195,135 +216,144 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                             {question ? 'Edit Question' : 'Create New Question'}
                         </DialogTitle>
                     </DialogHeader>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="question"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Question Content</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Enter question content" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="question_bank_id"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Bank</FormLabel>
-                                        <Select onValueChange={(v) => field.onChange(+v)} value={field.value as any}>
+                    {isFormReady ? (
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                                <FormField
+                                    control={form.control}
+                                    name="question"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Question Content</FormLabel>
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder={isLoading ? "Loading..." : "Select a bank"} />
-                                                </SelectTrigger>
+                                                <Input placeholder="Enter question content" {...field} />
                                             </FormControl>
-                                            <SelectContent>
-                                                {banks.map((bank) => (
-                                                    <SelectItem
-                                                        key={bank.question_bank_id}
-                                                        value={bank.question_bank_id as any}
-                                                    >
-                                                        {bank.bank_name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="space-y-4">
-                                <FormLabel>Answers</FormLabel>
-                                {['A', 'B', 'C', 'D'].map((key, index) => (
-                                    <div key={key} className="flex gap-2 items-center">
-                                        <div className="w-10 font-bold text-center">{key}</div>
-                                        <Input
-                                            value={answers[index].value}
-                                            onChange={(e) => {
-                                                const newAnswers = [...answers];
-                                                newAnswers[index] = {
-                                                    ...newAnswers[index],
-                                                    value: e.target.value
-                                                };
-                                                setAnswers(newAnswers);
-                                            }}
-                                            placeholder={`Enter answer ${key}`}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                            <FormField
-                                control={form.control}
-                                name="correct_answer"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Correct Answer</FormLabel>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            value={field.value}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select correct answer" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {['A', 'B', 'C', 'D'].map(key => (
-                                                    <SelectItem
-                                                        key={key}
-                                                        value={key}
-                                                        disabled={!answers.find(ans => ans.key === key)?.value.trim()}
-                                                    >
-                                                        {`${key} - ${answers.find(ans => ans.key === key)?.value || ''}`}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="flex justify-end space-x-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => setIsDialogOpen(false)}
-                                    disabled={isSubmitting}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button type="submit" disabled={isSubmitting}>
-                                    {isSubmitting
-                                        ? 'Saving...'
-                                        : (question ? 'Update Question' : 'Create Question')
-                                    }
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="question_bank_id"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Bank</FormLabel>
+                                            <Select 
+                                                onValueChange={(v) => field.onChange(+v)} 
+                                                value={field.value?.toString()}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a bank" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {banks.map((bank) => (
+                                                        <SelectItem
+                                                            key={bank.question_bank_id}
+                                                            value={bank.question_bank_id.toString()}
+                                                        >
+                                                            {bank.bank_name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="space-y-4">
+                                    <FormLabel>Answers</FormLabel>
+                                    {['A', 'B', 'C', 'D'].map((key, index) => (
+                                        <div key={key} className="flex gap-2 items-center">
+                                            <div className="w-10 font-bold text-center">{key}</div>
+                                            <Input
+                                                value={answers[index].value}
+                                                onChange={(e) => {
+                                                    const newAnswers = [...answers];
+                                                    newAnswers[index] = {
+                                                        ...newAnswers[index],
+                                                        value: e.target.value
+                                                    };
+                                                    setAnswers(newAnswers);
+                                                }}
+                                                placeholder={`Enter answer ${key}`}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="correct_answer"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Correct Answer</FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                value={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select correct answer" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {['A', 'B', 'C', 'D'].map(key => (
+                                                        <SelectItem
+                                                            key={key}
+                                                            value={key}
+                                                            disabled={!answers.find(ans => ans.key === key)?.value.trim()}
+                                                        >
+                                                            {`${key} - ${answers.find(ans => ans.key === key)?.value || ''}`}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="flex justify-end space-x-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => handleDialogOpenChange(false)}
+                                        disabled={isSubmitting}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" disabled={isSubmitting}>
+                                        {isSubmitting
+                                            ? 'Saving...'
+                                            : (question ? 'Update Question' : 'Create Question')
+                                        }
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
+                    ) : (
+                        <div className="flex justify-center items-center p-8">
+                            Loading...
+                        </div>
+                    )}
                 </DialogContent>
-                {!isHideImport && (
-                    <>
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsImportOpen(true)}
-                        >
-                            <Upload className="h-4 w-4 mr-2" />
-                            Import CSV
-                        </Button>
-                        <ImportDialog
-                            isOpen={isImportOpen}
-                            onClose={() => setIsImportOpen(false)}
-                            onSubmit={handleImport}
-                        />
-                    </>
-                )}
             </Dialog>
+            {!isHideImport && (
+                <>
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsImportOpen(true)}
+                    >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Import CSV
+                    </Button>
+                    <ImportDialog
+                        isOpen={isImportOpen}
+                        onClose={() => setIsImportOpen(false)}
+                        onSubmit={onSubmit}
+                    />
+                </>
+            )}
         </div>
     );
 };
