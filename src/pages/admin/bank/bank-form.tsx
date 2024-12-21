@@ -15,9 +15,9 @@ import { useUserStore } from '@/stores';
 
 const bankFormSchema = z.object({
     bank_name: z.string()
-        .min(2, "Bank name must be at least 2 characters long.")
+        .min(2, "Question Bank name must be at least 2 characters long.")
         .regex(/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]*$/, {
-            message: "Bank name can only contain letters and spaces"
+            message: "Question Bank name can only contain letters and spaces"
         })
         .trim(),
     is_public: z.boolean(),

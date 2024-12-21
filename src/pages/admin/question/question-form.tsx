@@ -237,14 +237,14 @@ export const QuestionForm: FC<QuestionFormProps> = ({ question, onSubmit, isHide
                                     name="question_bank_id"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Bank</FormLabel>
+                                            <FormLabel>Question Bank</FormLabel>
                                             <Select 
                                                 onValueChange={(v) => field.onChange(+v)} 
                                                 value={field.value?.toString()}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select a bank" />
+                                                        <SelectValue placeholder="Select a question bank" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>

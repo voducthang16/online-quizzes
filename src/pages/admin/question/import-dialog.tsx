@@ -82,7 +82,7 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
 
     const handleUpload = async () => {
         if (!selectedFile || !selectedBank) {
-            toast.error('Please select a bank and a file');
+            toast.error('Please select a question bank and a file');
             return;
         }
 
@@ -152,7 +152,7 @@ export const ImportDialog = ({ isOpen, onClose, onSubmit }: {
                             value={selectedBank}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder={isLoading ? "Loading..." : "Select a bank"} />
+                                <SelectValue placeholder={isLoading ? "Loading..." : "Select a question bank"} />
                             </SelectTrigger>
                             <SelectContent>
                                 {banks.map((bank) => (
