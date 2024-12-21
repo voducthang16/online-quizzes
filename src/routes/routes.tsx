@@ -103,7 +103,7 @@ export const routes: RouteConfig[] = [
     {
         path: ROUTES.BANK,
         element: <BankPage />,
-        title: 'Bank',
+        title: 'Question Bank',
         icon: Landmark,
         allowedRoles: [ROLE.ADMIN, ROLE.TEACHER],
         isSidebar: true,

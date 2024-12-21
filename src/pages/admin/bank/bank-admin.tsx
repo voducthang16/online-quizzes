@@ -78,7 +78,7 @@ const BankAdmin: FC<BankAdminProps> = ({ isTeacherView = false }) => {
     return (
         <>
             <div className="mb-4 flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Bank Management</h1>
+                <h1 className="text-2xl font-bold">Question Bank Management</h1>
                 <BankForm onSubmit={handleSubmit}/>
             </div>
             <BankList banks={banks} onSubmit={handleSubmit} onDelete={handleDelete} />
